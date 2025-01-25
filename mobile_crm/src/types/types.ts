@@ -75,9 +75,225 @@ type MeetingType = {
 };
 
 // Lead Analysis Types
-export interface LeadAnalysisTypes {
+export interface LeadAnalysisType {
   message: {
     month: string;
     leads: number;
   }[];
+}
+
+export interface LeadListType {
+  data: LeadType[];
+}
+
+export type LeadType = {
+  name: string;
+  owner: LeadOwner;
+  creation: Date;
+  modified: Date;
+  modified_by: LeadOwner;
+  docstatus: number;
+  idx: number;
+  naming_series: NamingSeries;
+  first_name: string;
+  last_name: null | string;
+  mobile_no: string;
+  whatsapp_no: null;
+  email_id: string;
+  salutation: null;
+  lead_date: Date | null;
+  lead_status: LeadStatus;
+  lead_name: string;
+  custom_preferred_contact_method: CustomPreferredContactMethod;
+  custom_birthday: null;
+  custom_anniversary_date: null;
+  custom_latest_visit_status: CustomLatestVisitStatus;
+  custom_area: null;
+  custom_city1: null;
+  custom_postal_code: null;
+  custom_address_copy: null;
+  custom_state_copy: null;
+  custom_city_copy: null;
+  custom_postal_code_copy: null;
+  custom_state1: null;
+  custom_repeat_customer: null;
+  custom_address: null;
+  custom_rented: number;
+  custom_owned: number;
+  custom_parentalfriend: number;
+  custom_current_residence_type: null;
+  custom_property_name: null;
+  custom_project: null;
+  custom_project_name_data: null;
+  locality: null | string;
+  property_name: null;
+  custom_financing_dea: string;
+  custom_expected_time_of_purchase: string;
+  custom_budget_range: string;
+  custom_purpose_of_purchase: CustomPurposeOfPurchase;
+  custom_attednded_by: null;
+  custom_sales_manager: null;
+  lead_owner: LeadOwner;
+  source: null | string;
+  custom_visit_status: CustomVisitStatus;
+  campaign_name: null | string;
+  lead_source: null | string;
+  custom_cp_firm_name: null;
+  custom_channel_partner_name: null;
+  custom_channel_partner_mobile: null;
+  team_leader: null;
+  project_name: null;
+  property: null;
+  middle_name: null;
+  job_title: null;
+  custom_remider_date: null;
+  custom_reminder_time_minutes: null;
+  custom_reminder_time_hours: null;
+  custom_reminder_time_format: CustomReminderTimeFormat;
+  lead_result: LeadResult;
+  custom_reminder_notes: null;
+  gender: null;
+  status: Status;
+  customer: null;
+  type: string;
+  request_type: string;
+  website: null;
+  phone: string;
+  phone_ext: null;
+  company_name: null;
+  no_of_employees: NoOfEmployees;
+  annual_revenue: number;
+  industry: null;
+  market_segment: null;
+  territory: null;
+  fax: null;
+  qualification_status: QualificationStatus;
+  qualified_by: null;
+  qualified_on: null;
+  company: Company;
+  language: Language;
+  image: string;
+  title: string;
+  disabled: number;
+  unsubscribed: number;
+  blog_subscriber: number;
+  custom_mobile_number_1: null;
+  custom_mobile_number_2: null;
+  custom_mobile_number_3: null;
+  custom_email_id_1: null;
+  custom_email_id_2: null;
+  custom_email_id_3: null;
+  city: null;
+  state: null;
+  country: Country;
+  custom_budget: CustomBudget;
+  custom_occupation: null;
+  team_leader_name: null;
+  assigned_to: null;
+  custom_employee_name: null;
+  custom_mobile_no: null;
+  team: null;
+  configuration: null;
+};
+
+export enum Company {
+  Realtyreflex = "Realtyreflex",
+}
+
+export enum Country {
+  India = "India",
+}
+
+export enum CustomBudget {
+  The6070Lakhs = "60-70 Lakhs",
+  The7080Lakhs = "70-80 Lakhs",
+  The8090Lakhs = "80-90 Lakhs",
+  Above1Cr = "Above 1 Cr.",
+}
+
+export enum CustomLatestVisitStatus {
+  Empty = "",
+  VisitDone = "Visit Done",
+  VisitScheduled = "Visit Scheduled",
+  ReVisitDone = "Re-Visit Done",
+  ReVisitScheduled = "Re-Visit Scheduled",
+  VisitCancelled = "Visit Cancelled",
+}
+
+export enum CustomPreferredContactMethod {
+  Empty = "",
+  PhoneCall = "Phone Call",
+}
+
+export enum CustomPurposeOfPurchase {
+  Empty = "",
+  Investment = "Investment",
+}
+
+export enum CustomReminderTimeFormat {
+  Am = "AM",
+  Pm = "PM",
+}
+
+export enum CustomVisitStatus {
+  NotScheduled = "Not Scheduled",
+}
+
+export enum Language {
+  En = "en",
+}
+
+export enum LeadOwner {
+  Administrator = "Administrator",
+  FunnelChatnextHybrowlabsCOM = "funnel@chatnext.hybrowlabs.com",
+}
+
+export enum LeadResult {
+  Open = "Open",
+  Closed = "Closed",
+}
+
+export enum LeadStatus {
+  Hot = "Hot",
+  Open = "Open",
+  NewLead = "New Lead",
+  Replied = "Replied",
+  Converted = "Converted",
+  Quotation = "Quotation",
+  Interested = "Interested",
+  Opportunity = "Opportunity",
+  Unresponsive = "Unresponsive",
+  DoNotContact = "Do Not Contact",
+  LostQuotation = "Lost Quotation",
+}
+
+export enum NamingSeries {
+  CRMLeadYyyy = "CRM-LEAD-.YYYY.-",
+}
+
+export enum NoOfEmployees {
+  The110 = "1-10",
+  The1150 = "11-50",
+  The5150 = "51-200",
+  The5200 = "201-500",
+  The51000 = "501-1000",
+  The1000 = "1000+",
+}
+
+export enum QualificationStatus {
+  Unqualified = "Unqualified",
+  InProcess = "In Process",
+  Qualified = "Qualified",
+}
+
+export enum Status {
+  Open = "Open",
+  Lead = "Lead",
+  Replied = "Replied",
+  Converted = "Converted",
+  Quotation = "Quotation",
+  Interested = "Interested",
+  Opportunity = "Opportunity",
+  DoNotContact = "Do Not Contact",
+  LostQuotation = "Lost Quotation",
 }

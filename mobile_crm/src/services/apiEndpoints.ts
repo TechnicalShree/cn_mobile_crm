@@ -8,6 +8,8 @@ const API_END_POINTS = {
   // Standard Methods
   getPendingTaskList: "/api/resource/ToDo",
   getMeetingList: "/api/resource/Daily Visit Schedule",
+
+  getLeadList: "/api/resource/Lead",
 };
 
 export default API_END_POINTS;

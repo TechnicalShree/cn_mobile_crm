@@ -4,7 +4,7 @@ from collections import defaultdict
 
 OPEN_LEAD_FILTERS = ["Open"]
 UNRESPONDED_LEAD_FILTERS = ["Unresponsive"]
-HOT_LEAD_FILTERS = ["New Lead", "Opportunity", "Interested", "Replied"]
+HOT_LEAD_FILTERS = ["Hot"]
 # HOT_LEAD_FILTERS = ["Interested", "Replied"]
 OPPORTUNITY_LEAD_FILTERS = ["Opportunity"]
 QUOTATION_FILTERS = ["Quotation"]

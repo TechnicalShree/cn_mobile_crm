@@ -1,5 +1,6 @@
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -23,8 +24,12 @@ interface FilterDialogProps {
   onFilterChange: (filters: Record<string, string>) => void;
 }
 
-export default function FilterDialog({ filters, onFilterChange }: FilterDialogProps) {
-  const [tempFilters, setTempFilters] = useState<Record<string, string>>(filters);
+export default function FilterDialog({
+  filters,
+  onFilterChange,
+}: FilterDialogProps) {
+  const [tempFilters, setTempFilters] =
+    useState<Record<string, string>>(filters);
 
   const updateTempFilter = (key: string, value: string) => {
     if (value) {
@@ -52,9 +57,9 @@ export default function FilterDialog({ filters, onFilterChange }: FilterDialogPr
           <Button variant="outline" size="icon">
             <span className="sr-only">Open filters</span>
             {Object.keys(filters).length > 0 && (
-              <Badge 
-                variant="secondary" 
-                className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center"
+              <Badge
+                variant="secondary"
+                className="absolute flex items-center justify-center w-5 h-5 p-0 rounded-lg -top-2 -right-2"
               >
                 {Object.keys(filters).length}
               </Badge>
@@ -69,7 +74,7 @@ export default function FilterDialog({ filters, onFilterChange }: FilterDialogPr
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="h-4 w-4"
+              className="w-4 h-4"
             >
               <line x1="21" x2="14" y1="4" y2="4" />
               <line x1="10" x2="3" y1="4" y2="4" />
@@ -151,17 +156,19 @@ export default function FilterDialog({ filters, onFilterChange }: FilterDialogPr
         </div>
 
         {/* Apply Button */}
-        <div className="pt-4 flex justify-end">
-          <Button onClick={applyFilters}>Apply Filters</Button>
+        <div className="flex justify-end pt-4">
+          <DialogClose asChild>
+            <Button onClick={applyFilters}>Apply Filters</Button>
+          </DialogClose>
         </div>
 
         {Object.keys(tempFilters).length > 0 && (
           <div className="flex flex-wrap gap-2 pt-2">
             {Object.entries(tempFilters).map(([key, value]) => (
-              <Badge key={key} variant="secondary" className="gap-1">
+              <Badge key={key} variant="secondary" className="gap-1 rounded-sm">
                 {key}: {value}
                 <X
-                  className="h-3 w-3 cursor-pointer"
+                  className="w-3 h-3 cursor-pointer"
                   onClick={() => updateTempFilter(key, "")}
                 />
               </Badge>

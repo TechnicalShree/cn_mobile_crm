@@ -3,23 +3,43 @@ import { Button } from "../components/ui/button";
 import PageContainer from "../components/layout/page-container";
 import BusinessSummary from "../components/dashboard/business-summary";
 import LeadAnalysis from "../components/dashboard/lead-analysis";
-import StarredLeads from "../components/dashboard/starred-leads";
+// import StarredLeads from "../components/dashboard/starred-leads";
 import TaskList from "../components/dashboard/task-list";
 import ScheduledVisits from "../components/dashboard/scheduled-visits";
-import { dashboardStats, leads, leadData } from "../lib/mock-data";
+import { dashboardStats, leadData } from "../lib/mock-data";
 import { Link } from "wouter";
 import { UserPlus, Users } from "lucide-react";
 import { useFetchLeadAndOpportunityStats } from "../services/query";
 
 export default function Dashboard() {
   const { data: dashboardLeadStats } = useFetchLeadAndOpportunityStats();
-  
+
   const shortcuts = [
-    { label: "Open Leads", href: "/mobile_crm/leads?status=open", count: dashboardLeadStats?.message.open_leads_count ?? 0 },
-    { label: "Unresponded Leads", href: "/mobile_crm/leads?status=unresponded", count: dashboardLeadStats?.message.unresponded_lead_count ?? 0 },
-    { label: "Hot Leads", href: "/mobile_crm/leads?status=hot", count: dashboardLeadStats?.message.hot_lead_count ?? 0 },
-    { label: "Opportunities", href: "/mobile_crm/leads?status=opportunity", count: dashboardLeadStats?.message.opportunity_lead_count ?? 0 },
-    { label: "Quotations", href: "/mobile_crm/leads?status=quotation", count: dashboardLeadStats?.message.quotation_count ?? 0 },
+    {
+      label: "Open Leads",
+      href: "/mobile_crm/leads?status=Open",
+      count: dashboardLeadStats?.message.open_leads_count ?? 0,
+    },
+    {
+      label: "Unresponded Leads",
+      href: "/mobile_crm/leads?status=unresponded",
+      count: dashboardLeadStats?.message.unresponded_lead_count ?? 0,
+    },
+    {
+      label: "Hot Leads",
+      href: "/mobile_crm/leads?status=Hot",
+      count: dashboardLeadStats?.message.hot_lead_count ?? 0,
+    },
+    {
+      label: "Opportunities",
+      href: "/mobile_crm/leads?status=Opportunity",
+      count: dashboardLeadStats?.message.opportunity_lead_count ?? 0,
+    },
+    {
+      label: "Quotations",
+      href: "/mobile_crm/leads?status=Quotation",
+      count: dashboardLeadStats?.message.quotation_count ?? 0,
+    },
   ];
 
   const metrics = [

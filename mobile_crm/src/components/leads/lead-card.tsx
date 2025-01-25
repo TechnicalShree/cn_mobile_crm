@@ -1,45 +1,43 @@
 import { Card } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { Badge } from "../../components/ui/badge";
-import { Mail, Phone, MessageSquare, Edit, CheckSquare } from "lucide-react";
+import { Mail, Phone, MessageSquare, CheckSquare } from "lucide-react";
 import { SiWhatsapp } from "react-icons/si";
 import { Link } from "wouter";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../../components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../../components/ui/dialog";
 import { Textarea } from "../../components/ui/textarea";
 import { Input } from "../../components/ui/input";
-import type { Lead } from "../../lib/types";
+import { LeadType } from "../../types/types";
 
-interface LeadCardProps {
-  lead: Lead;
-}
-
-export default function LeadCard({ lead }: LeadCardProps) {
+export default function LeadCard({ lead }: { lead: LeadType }) {
   const renderBadge = () => {
-    const badgeText = lead.status === "Do Not Contact" 
-      ? `${lead.type} - Do Not Contact`
-      : lead.type;
-
     return (
-      <Badge 
-        variant={lead.status === "Do Not Contact" ? "destructive" : "secondary"}
-        className="text-xs px-2 py-0.5"
+      <Badge
+        variant={
+          lead.lead_status === "Do Not Contact" ? "destructive" : "secondary"
+        }
+        className="text-xs px-2 py-0.5 rounded-sm"
       >
-        {badgeText}
+        {lead.lead_status}
       </Badge>
     );
   };
 
   return (
-    <Link href={`/mobile_crm/leads/${lead.id}`}>
-      <Card className="p-3 cursor-pointer hover:shadow-md transition-all duration-200">
+    <Link href={`/mobile_crm/leads/${lead.name}`}>
+      <Card className="p-3 transition-all duration-200 cursor-pointer hover:shadow-md">
         {/* Badge */}
-        <div className="mb-2">
-          {renderBadge()}
-        </div>
+        <div className="mb-2">{renderBadge()}</div>
 
         {/* Lead Info */}
         <div className="space-y-1">
-          <h3 className="font-medium text-sm">{lead.name}</h3>
+          <h3 className="text-sm font-medium">{lead.name}</h3>
           <div className="text-sm text-muted-foreground">
             {lead.company_name}
             {lead.territory && (
@@ -52,15 +50,18 @@ export default function LeadCard({ lead }: LeadCardProps) {
           <div className="flex items-center justify-between text-sm">
             <span className="text-primary">{lead.qualification_status}</span>
             <span className="text-muted-foreground truncate max-w-[200px]">
-              {lead.email}
+              {lead.email_id}
             </span>
           </div>
         </div>
 
         {/* Action Buttons */}
-        <div className="flex justify-end gap-1.5 mt-2" onClick={(e) => e.preventDefault()}>
-          <Button 
-            variant="ghost" 
+        <div
+          className="flex justify-end gap-1.5 mt-2"
+          onClick={(e) => e.preventDefault()}
+        >
+          <Button
+            variant="ghost"
             size="icon"
             className="h-7 w-7"
             title="Call"
@@ -68,28 +69,28 @@ export default function LeadCard({ lead }: LeadCardProps) {
           >
             <Phone className="h-3.5 w-3.5" />
           </Button>
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             size="icon"
             className="h-7 w-7"
             title="Email"
-            onClick={() => window.open(`mailto:${lead.email}`)}
+            onClick={() => window.open(`mailto:${lead.email_id}`)}
           >
             <Mail className="h-3.5 w-3.5" />
           </Button>
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             size="icon"
             className="h-7 w-7"
             title="WhatsApp"
-            onClick={() => window.open(`https://wa.me/${lead.whatsapp_id}`)}
+            onClick={() => window.open(`https://wa.me/${lead.mobile_no}`)}
           >
             <SiWhatsapp className="h-3.5 w-3.5" />
           </Button>
           <Dialog>
             <DialogTrigger asChild>
-              <Button 
-                variant="ghost" 
+              <Button
+                variant="ghost"
                 size="icon"
                 className="h-7 w-7"
                 title="Add Note"
@@ -102,7 +103,10 @@ export default function LeadCard({ lead }: LeadCardProps) {
                 <DialogTitle>Add Note</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
-                <Textarea placeholder="Type your note..." className="min-h-[100px]" />
+                <Textarea
+                  placeholder="Type your note..."
+                  className="min-h-[100px]"
+                />
                 <div className="flex justify-end">
                   <Button>Add Note</Button>
                 </div>
@@ -111,8 +115,8 @@ export default function LeadCard({ lead }: LeadCardProps) {
           </Dialog>
           <Dialog>
             <DialogTrigger asChild>
-              <Button 
-                variant="ghost" 
+              <Button
+                variant="ghost"
                 size="icon"
                 className="h-7 w-7"
                 title="Add Task"
