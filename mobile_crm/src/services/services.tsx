@@ -8,6 +8,13 @@ export const getLeadAndOpportunityStats = <TData,>(): (() => Promise<TData>) => 
           method: "GET",
         });
   };
+
+export const getLeadAnalysisStats = <TData,>(): (() => Promise<TData>) => {
+    return async () => await requestWrapper<TData>({
+          url: API_END_POINTS.getLeadAnalysisStats,
+          method: "GET",
+        });
+  };
   
 export const getPendingTaskList = <TData,>(): (() => Promise<TData>) => {
   return async () => await requestWrapper<TData>({

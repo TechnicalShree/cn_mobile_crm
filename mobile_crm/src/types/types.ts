@@ -73,3 +73,11 @@ type MeetingType = {
   start_time: string;
   end_time: string;
 };
+
+// Lead Analysis Types
+export interface LeadAnalysisTypes {
+  message: {
+    month: string;
+    leads: number;
+  }[];
+}

@@ -13,16 +13,18 @@ export default function ScheduledVisits() {
       </CardHeader>
       <CardContent className="space-y-3">
         {todayVisits?.data && todayVisits?.data.length > 0 ? (
-          todayVisits.data.map((visit) => (
+          todayVisits?.data.map((visit) => (
             <div
-              key={visit.name}
+              key={visit.full_name}
               className="flex items-start justify-between pb-3 border-b last:border-0 last:pb-0"
             >
               <div className="space-y-1">
                 <p className="font-medium">{visit.full_name ?? "-"}</p>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Clock className="w-4 h-4" />
-                  <span>{visit.time_hrs}:{visit.time_mins} {visit.time_format}</span>
+                  <span>
+                    {visit.time_hrs}:{visit.time_mins} {visit.time_format}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <MapPin className="w-4 h-4" />
@@ -35,9 +37,7 @@ export default function ScheduledVisits() {
             </div>
           ))
         ) : (
-          <p className="py-2 text-sm text-center rounded-sm text-muted-foreground">
-            No visits scheduled for today
-          </p>
+          <p className="py-2 text-sm text-center rounded-sm text-muted-foreground">No visits scheduled for today</p>
         )}
       </CardContent>
     </Card>

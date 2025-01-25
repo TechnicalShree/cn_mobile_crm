@@ -1,5 +1,6 @@
 import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
 import { Card } from "../../components/ui/card";
+import { useFetchLeadAnalysisStats } from "../../services/query";
 
 interface LeadDataPoint {
   month: string;
@@ -11,12 +12,17 @@ interface LeadAnalysisProps {
 }
 
 export default function LeadAnalysis({ data }: LeadAnalysisProps) {
+  const {data: starredLeads} = useFetchLeadAnalysisStats();
+
+  console.log("nsndlnsdldjsnfdfnkndn sdflsdkm----", starredLeads?.message, data);
+  
+  
   return (
     <Card className="p-4">
-      <h3 className="text-lg font-semibold mb-4">Lead Analysis</h3>
+      <h3 className="mb-4 text-lg font-semibold">Lead Analysis</h3>
       <div className="h-[300px] w-full">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={data}>
+          <AreaChart data={starredLeads?.message ?? []}>
             <defs>
               <linearGradient id="colorLeads" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>

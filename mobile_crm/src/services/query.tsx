@@ -1,7 +1,7 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
-import { getLeadAndOpportunityStats, getMeetingList, getPendingTaskList,  } from "./services";
+import { getLeadAndOpportunityStats, getMeetingList, getPendingTaskList, getLeadAnalysisStats } from "./services";
 import { AxiosError } from "axios";
-import { DashboardStatsInfoType, MeetingListType, ToDoListType } from "../types/types";
+import { DashboardStatsInfoType, LeadAnalysisTypes, MeetingListType, ToDoListType } from "../types/types";
 
 export const useFetchLeadAndOpportunityStats = <
   TData = DashboardStatsInfoType,
@@ -15,6 +15,20 @@ export const useFetchLeadAndOpportunityStats = <
       options,
   );
 };
+
+export const useFetchLeadAnalysisStats = <
+  TData = LeadAnalysisTypes,
+  TError = AxiosError,
+>(
+  options?: UseQueryOptions<LeadAnalysisTypes, TError, TData>
+) => {
+  return useQuery<LeadAnalysisTypes, TError, TData>(
+      ["getLeadAnalysisStats"],
+      getLeadAnalysisStats<LeadAnalysisTypes>(),
+      options,
+  );
+};
+
 
 export const useFetchPedingTaskList = <
   TData = ToDoListType,

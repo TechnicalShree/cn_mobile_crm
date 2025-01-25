@@ -95,9 +95,9 @@ export default function Dashboard() {
       </div>
 
       {/* Starred Leads */}
-      <div className="mb-6">
+      {/* <div className="mb-6">
         <StarredLeads leads={leads} />
-      </div>
+      </div> */}
 
       {/* Lead Analysis */}
       <LeadAnalysis data={leadData} />
