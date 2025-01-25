@@ -53,21 +53,21 @@ export default function Leads() {
     <PageContainer>
       {/* Header with Actions */}
       <div className="flex items-center justify-between mb-6">
-        <Link href="/">
+        <Link href="/mobile_crm/">
           <Button variant="ghost" size="sm" className="gap-2">
-            <ArrowLeft className="h-4 w-4" />
+            <ArrowLeft className="w-4 h-4" />
             Back
           </Button>
         </Link>
-        <Button size="icon" className="h-8 w-8">
-          <UserPlus className="h-4 w-4" />
+        <Button size="icon" className="w-8 h-8">
+          <UserPlus className="w-4 h-4" />
         </Button>
       </div>
 
       {/* Search and Filter */}
-      <div className="flex gap-2 mb-4 w-full">
+      <div className="flex w-full gap-2 mb-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <Search className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
           <Input
             placeholder={`Search for ${activeTab === "OPPORTUNITY" ? "Opportunity" : "Lead"}`}
             className="pl-10"
@@ -79,9 +79,9 @@ export default function Leads() {
       </div>
 
       {/* Tabs */}
-      <div className="w-full overflow-x-auto mb-4">
+      <div className="w-full mb-4 overflow-x-auto">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="w-full justify-start">
+          <TabsList className="justify-start w-full">
             <TabsTrigger value="ALL">ALL</TabsTrigger>
             <TabsTrigger value="LEAD">Lead</TabsTrigger>
             <TabsTrigger value="OPPORTUNITY">Opportunity</TabsTrigger>
