@@ -1,0 +1,58 @@
+import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
+import { Card } from "../../components/ui/card";
+
+interface LeadDataPoint {
+  month: string;
+  leads: number;
+}
+
+interface LeadAnalysisProps {
+  data: LeadDataPoint[];
+}
+
+export default function LeadAnalysis({ data }: LeadAnalysisProps) {
+  return (
+    <Card className="p-4">
+      <h3 className="text-lg font-semibold mb-4">Lead Analysis</h3>
+      <div className="h-[300px] w-full">
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={data}>
+            <defs>
+              <linearGradient id="colorLeads" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
+                <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+              </linearGradient>
+            </defs>
+            <XAxis 
+              dataKey="month" 
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: 'hsl(var(--foreground))', fontSize: 12 }}
+            />
+            <YAxis 
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: 'hsl(var(--foreground))', fontSize: 12 }}
+            />
+            <Tooltip 
+              contentStyle={{ 
+                background: 'hsl(var(--background))',
+                border: '1px solid hsl(var(--border))',
+                borderRadius: '8px',
+                padding: '8px'
+              }}
+            />
+            <Area
+              type="monotone"
+              dataKey="leads"
+              stroke="hsl(var(--primary))"
+              strokeWidth={2}
+              fillOpacity={1}
+              fill="url(#colorLeads)"
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+    </Card>
+  );
+}

@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [],
+  content: ["./client/index.html", "./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {},
     borderRadius: {
@@ -83,5 +83,5 @@ export default {
       "accordion-up": "accordion-up 0.2s ease-out",
     },
   },
-  plugins: [],
+  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
 };
