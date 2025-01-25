@@ -53,7 +53,7 @@ export default function Leads() {
     <PageContainer>
       {/* Header with Actions */}
       <div className="flex items-center justify-between mb-6">
-        <Link href="/mobile_crm/">
+        <Link href="/mobile_crm">
           <Button variant="ghost" size="sm" className="gap-2">
             <ArrowLeft className="w-4 h-4" />
             Back

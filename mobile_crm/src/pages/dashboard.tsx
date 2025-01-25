@@ -9,8 +9,10 @@ import ScheduledVisits from "../components/dashboard/scheduled-visits";
 import { dashboardStats, leads, tasks, leadData, visits } from "../lib/mock-data";
 import { Link } from "wouter";
 import { UserPlus, Users } from "lucide-react";
+import { fetchLeadAndOpportunityStats } from "../services/query";
 
 export default function Dashboard() {
+  const { data } = fetchLeadAndOpportunityStats();
   const shortcuts = [
     { label: "Open Leads", href: "/mobile_crm/leads?status=open", count: dashboardStats.quickStats.openLeads },
     { label: "Unresponded Leads", href: "/mobile_crm/leads?status=unresponded", count: dashboardStats.quickStats.unrespondedLeads },
@@ -18,6 +20,9 @@ export default function Dashboard() {
     { label: "Opportunities", href: "/mobile_crm/leads?status=opportunity", count: dashboardStats.quickStats.opportunities },
     { label: "Quotations", href: "/mobile_crm/leads?status=quotation", count: dashboardStats.quickStats.quotations },
   ];
+
+  console.log(data, "sdfksdfkns kdnfsdnflnd");
+  
 
   const metrics = [
     {
@@ -39,7 +44,7 @@ export default function Dashboard() {
       {/* Header with User Profile */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
-          <Avatar className="h-10 w-10" />
+          <Avatar className="w-10 h-10" />
           <div>
             <h1 className="text-xl font-bold">{dashboardStats.user.name}</h1>
             <div className="flex items-center gap-2 text-sm text-gray-500">
@@ -51,13 +56,13 @@ export default function Dashboard() {
         </div>
         <div className="flex gap-2">
           <Link href="/mobile_crm/leads">
-            <Button variant="outline" size="icon" className="h-8 w-8">
-              <Users className="h-4 w-4" />
+            <Button variant="outline" size="icon" className="w-8 h-8">
+              <Users className="w-4 h-4" />
             </Button>
           </Link>
           <Link href="/mobile_crm/leads?new=true">
-            <Button size="icon" className="h-8 w-8">
-              <UserPlus className="h-4 w-4" />
+            <Button size="icon" className="w-8 h-8">
+              <UserPlus className="w-4 h-4" />
             </Button>
           </Link>
         </div>
@@ -74,7 +79,7 @@ export default function Dashboard() {
           <Link key={shortcut.label} href={shortcut.href}>
             <Button
               variant="outline"
-              className="w-full justify-between h-auto py-3 px-4"
+              className="justify-between w-full h-auto px-4 py-3"
             >
               <span className="text-sm font-medium">{shortcut.label}</span>
               <span className="text-sm font-bold text-primary">
@@ -86,7 +91,7 @@ export default function Dashboard() {
       </div>
 
       {/* Tasks and Visits Grid */}
-      <div className="grid md:grid-cols-2 gap-6 mb-6">
+      <div className="grid gap-6 mb-6 md:grid-cols-2">
         <TaskList tasks={tasks} />
         <ScheduledVisits visits={visits} />
       </div>
