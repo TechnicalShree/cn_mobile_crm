@@ -6,23 +6,21 @@ import LeadAnalysis from "../components/dashboard/lead-analysis";
 import StarredLeads from "../components/dashboard/starred-leads";
 import TaskList from "../components/dashboard/task-list";
 import ScheduledVisits from "../components/dashboard/scheduled-visits";
-import { dashboardStats, leads, tasks, leadData, visits } from "../lib/mock-data";
+import { dashboardStats, leads, leadData } from "../lib/mock-data";
 import { Link } from "wouter";
 import { UserPlus, Users } from "lucide-react";
-import { fetchLeadAndOpportunityStats } from "../services/query";
+import { useFetchLeadAndOpportunityStats } from "../services/query";
 
 export default function Dashboard() {
-  const { data } = fetchLeadAndOpportunityStats();
-  const shortcuts = [
-    { label: "Open Leads", href: "/mobile_crm/leads?status=open", count: dashboardStats.quickStats.openLeads },
-    { label: "Unresponded Leads", href: "/mobile_crm/leads?status=unresponded", count: dashboardStats.quickStats.unrespondedLeads },
-    { label: "Hot Leads", href: "/mobile_crm/leads?status=hot", count: dashboardStats.quickStats.hotLeads },
-    { label: "Opportunities", href: "/mobile_crm/leads?status=opportunity", count: dashboardStats.quickStats.opportunities },
-    { label: "Quotations", href: "/mobile_crm/leads?status=quotation", count: dashboardStats.quickStats.quotations },
-  ];
-
-  console.log(data, "sdfksdfkns kdnfsdnflnd");
+  const { data: dashboardLeadStats } = useFetchLeadAndOpportunityStats();
   
+  const shortcuts = [
+    { label: "Open Leads", href: "/mobile_crm/leads?status=open", count: dashboardLeadStats?.message.open_leads_count ?? 0 },
+    { label: "Unresponded Leads", href: "/mobile_crm/leads?status=unresponded", count: dashboardLeadStats?.message.unresponded_lead_count ?? 0 },
+    { label: "Hot Leads", href: "/mobile_crm/leads?status=hot", count: dashboardLeadStats?.message.hot_lead_count ?? 0 },
+    { label: "Opportunities", href: "/mobile_crm/leads?status=opportunity", count: dashboardLeadStats?.message.opportunity_lead_count ?? 0 },
+    { label: "Quotations", href: "/mobile_crm/leads?status=quotation", count: dashboardLeadStats?.message.quotation_count ?? 0 },
+  ];
 
   const metrics = [
     {
@@ -74,7 +72,7 @@ export default function Dashboard() {
       </div>
 
       {/* Quick Stats Grid */}
-      <div className="grid grid-cols-2 gap-3 mb-6">
+      <div className="grid grid-cols-1 gap-3 mb-6 sm:grid-cols-2">
         {shortcuts.map((shortcut) => (
           <Link key={shortcut.label} href={shortcut.href}>
             <Button
@@ -91,9 +89,9 @@ export default function Dashboard() {
       </div>
 
       {/* Tasks and Visits Grid */}
-      <div className="grid gap-6 mb-6 md:grid-cols-2">
-        <TaskList tasks={tasks} />
-        <ScheduledVisits visits={visits} />
+      <div className="grid grid-cols-1 gap-6 mb-6 md:grid-cols-2">
+        <TaskList />
+        <ScheduledVisits />
       </div>
 
       {/* Starred Leads */}

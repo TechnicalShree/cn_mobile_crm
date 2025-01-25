@@ -1,27 +1,30 @@
 import { Card } from "../../components/ui/card";
 import { Calendar } from "lucide-react";
-import type { Task } from "../../lib/types";
 import { format } from "date-fns";
+import { Link } from "wouter";
+import { useFetchPedingTaskList } from "../../services/query";
 
-interface TaskListProps {
-  tasks: Task[];
-}
 
-export default function TaskList({ tasks }: TaskListProps) {
+export default function TaskList() {
+  var { data: pendingTaskList } = useFetchPedingTaskList();
+
   return (
     <div className="space-y-4">
       <h2 className="text-lg font-semibold">Pending Tasks</h2>
-      {tasks.map((task) => (
-        <Card key={task.id} className="p-4">
-          <div className="flex items-start justify-between">
-            <div>
-              <h3 className="font-medium">{task.title}</h3>
-              <div className="flex items-center gap-2 mt-1 text-sm text-gray-500">
-                <Calendar className="h-4 w-4" />
-                <span>{format(new Date(task.dueDate), 'MMM dd, yyyy')}</span>
+      {pendingTaskList?.data?.length === 0 && <p className="text-sm text-gray-500">No pending tasks</p>}
+      {pendingTaskList?.data?.map((task) => (
+        <Card key={task.name} className="w-full">
+          <Link to={`/mobile_crm/leads/${task.reference_name}`}>
+            <div className="flex items-start justify-between w-full p-4">
+              <div className="w-full">
+                <h3 className="w-full font-medium truncate">{task.custom_type_of_activity}</h3>
+                <div className="flex items-center gap-2 mt-1 text-sm text-gray-500">
+                  <Calendar className="w-4 h-4" />
+                  <span>{format(new Date(task.creation), 'MMM dd, yyyy')}</span>
+                </div>
               </div>
             </div>
-          </div>
+          </Link>
         </Card>
       ))}
     </div>

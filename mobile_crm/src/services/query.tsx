@@ -1,9 +1,9 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
-import { getLeadAndOpportunityStats } from "./services";
+import { getLeadAndOpportunityStats, getMeetingList, getPendingTaskList,  } from "./services";
 import { AxiosError } from "axios";
-import { DashboardStatsInfoType } from "../types/types";
+import { DashboardStatsInfoType, MeetingListType, ToDoListType } from "../types/types";
 
-export const fetchLeadAndOpportunityStats = <
+export const useFetchLeadAndOpportunityStats = <
   TData = DashboardStatsInfoType,
   TError = AxiosError
 >(
@@ -12,6 +12,33 @@ export const fetchLeadAndOpportunityStats = <
   return useQuery<DashboardStatsInfoType, TError, TData>(
       ["getUserInfo"],
       getLeadAndOpportunityStats<DashboardStatsInfoType>(),
+      options,
+  );
+};
+
+export const useFetchPedingTaskList = <
+  TData = ToDoListType,
+  TError = AxiosError,
+>(
+  options?: UseQueryOptions<ToDoListType, TError, TData>
+) => {
+  return useQuery<ToDoListType, TError, TData>(
+      ["getPendingTaskList"],
+      getPendingTaskList<ToDoListType>(),
+      options,
+  );
+};
+
+
+export const useFetchMeetingList = <
+  TData = MeetingListType,
+  TError = AxiosError,
+>(
+  options?: UseQueryOptions<MeetingListType, TError, TData>
+) => {
+  return useQuery<MeetingListType, TError, TData>(
+      ["getMeetingList"],
+      getMeetingList<MeetingListType>(),
       options,
   );
 };
