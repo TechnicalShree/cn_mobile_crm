@@ -1,0 +1,15 @@
+{
+  "name": "cn_mobile_crm",
+  "version": "1.0.0",
+  "description": "CRM App",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "cd mobile_crm && yarn install",
+    "dev": "cd mobile_crm && yarn dev",
+    "build": "cd mobile_crm && yarn build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
