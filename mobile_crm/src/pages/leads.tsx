@@ -118,7 +118,10 @@ export default function Leads() {
     return filtersList;
   }, [searchQuery, filters]);
 
-  const { data: leadList } = useFetchLeadList(leadFilters, leadOrFilters);
+  const { data: leadList } = useFetchLeadList({
+    filters: leadFilters,
+    or_filters: leadOrFilters,
+  });
 
   return (
     <PageContainer>

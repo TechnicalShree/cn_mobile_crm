@@ -1,4 +1,11 @@
-import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
+import {
+  Area,
+  AreaChart,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+  Tooltip,
+} from "recharts";
 import { Card } from "../../components/ui/card";
 import { useFetchLeadAnalysisStats } from "../../services/query";
 
@@ -12,11 +19,14 @@ interface LeadAnalysisProps {
 }
 
 export default function LeadAnalysis({ data }: LeadAnalysisProps) {
-  const {data: starredLeads} = useFetchLeadAnalysisStats();
+  const { data: starredLeads } = useFetchLeadAnalysisStats({});
 
-  console.log("nsndlnsdldjsnfdfnkndn sdflsdkm----", starredLeads?.message, data);
-  
-  
+  console.log(
+    "nsndlnsdldjsnfdfnkndn sdflsdkm----",
+    starredLeads?.message,
+    data
+  );
+
   return (
     <Card className="p-4">
       <h3 className="mb-4 text-lg font-semibold">Lead Analysis</h3>
@@ -25,27 +35,35 @@ export default function LeadAnalysis({ data }: LeadAnalysisProps) {
           <AreaChart data={starredLeads?.message ?? []}>
             <defs>
               <linearGradient id="colorLeads" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
-                <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                <stop
+                  offset="5%"
+                  stopColor="hsl(var(--primary))"
+                  stopOpacity={0.3}
+                />
+                <stop
+                  offset="95%"
+                  stopColor="hsl(var(--primary))"
+                  stopOpacity={0}
+                />
               </linearGradient>
             </defs>
-            <XAxis 
-              dataKey="month" 
+            <XAxis
+              dataKey="month"
               axisLine={false}
               tickLine={false}
-              tick={{ fill: 'hsl(var(--foreground))', fontSize: 12 }}
+              tick={{ fill: "hsl(var(--foreground))", fontSize: 12 }}
             />
-            <YAxis 
+            <YAxis
               axisLine={false}
               tickLine={false}
-              tick={{ fill: 'hsl(var(--foreground))', fontSize: 12 }}
+              tick={{ fill: "hsl(var(--foreground))", fontSize: 12 }}
             />
-            <Tooltip 
-              contentStyle={{ 
-                background: 'hsl(var(--background))',
-                border: '1px solid hsl(var(--border))',
-                borderRadius: '8px',
-                padding: '8px'
+            <Tooltip
+              contentStyle={{
+                background: "hsl(var(--background))",
+                border: "1px solid hsl(var(--border))",
+                borderRadius: "8px",
+                padding: "8px",
               }}
             />
             <Area

@@ -74,3 +74,57 @@ export const getLeadList =
         limit_page_length,
       },
     });
+
+// Lead Detail Page API
+export const getLeadDetails =
+  <TData,>({ lead_id }: { lead_id: string }): (() => Promise<TData>) =>
+  () =>
+    requestWrapper<TData>({
+      url: `${API_END_POINTS.getLeadDetails}/${lead_id}`,
+      method: "GET",
+    });
+
+// Visit List API
+export const getVisitList =
+  <TData,>({ lead_id }: { lead_id: string }): (() => Promise<TData>) =>
+  () =>
+    requestWrapper<TData>({
+      url: API_END_POINTS.getVisitList,
+      method: "GET",
+      params: {
+        fields: JSON.stringify(["*"]),
+        filters: JSON.stringify([["lead", "=", lead_id]]),
+      },
+    });
+
+// Task List API
+export const getTaskList =
+  <TData,>({ lead_id }: { lead_id: string }): (() => Promise<TData>) =>
+  () =>
+    requestWrapper<TData>({
+      url: API_END_POINTS.todoApi,
+      method: "GET",
+      params: {
+        fields: JSON.stringify(["*"]),
+        filters: JSON.stringify([
+          ["reference_type", "=", "Lead"],
+          ["reference_name", "=", lead_id],
+        ]),
+      },
+    });
+
+// // Note List API
+// export const getNoteList =
+//   <TData,>({ lead_id }: { lead_id: string }): (() => Promise<TData>) =>
+//   () =>
+//     requestWrapper<TData>({
+//       url: API_END_POINTS.todoApi,
+//       method: "GET",
+//       params: {
+//         fields: JSON.stringify(["*"]),
+//         filters: JSON.stringify([
+//           ["reference_type", "=", "Lead"],
+//           ["reference_name", "=", lead_id],
+//         ]),
+//       },
+//     });

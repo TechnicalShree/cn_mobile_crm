@@ -86,7 +86,7 @@ export interface LeadListType {
   data: LeadType[];
 }
 
-export type LeadType = {
+export interface LeadType {
   name: string;
   owner: LeadOwner;
   creation: Date;
@@ -194,7 +194,7 @@ export type LeadType = {
   custom_mobile_no: null;
   team: null;
   configuration: null;
-};
+}
 
 export enum Company {
   Realtyreflex = "Realtyreflex",
@@ -297,3 +297,208 @@ export enum Status {
   DoNotContact = "Do Not Contact",
   LostQuotation = "Lost Quotation",
 }
+
+// Lead details pages
+
+export interface LeadDetailsType {
+  data: LeadDetails;
+}
+
+export type LeadDetails = {
+  name: string;
+  owner: LeadOwner; // Assuming LeadOwner is a type that can be used for both fields
+  creation: Date;
+  modified: Date;
+  modified_by: LeadOwner; // Assuming this is the same as 'owner' in the first type
+  docstatus: number;
+  idx: number;
+  naming_series: NamingSeries; // Assuming NamingSeries is a valid type
+  first_name: string;
+  last_name: string | null;
+  middle_name: string | null;
+  mobile_no: string;
+  whatsapp_no: string | null;
+  email_id: string;
+  salutation: string | null;
+  lead_date: Date | null;
+  lead_status: LeadStatus;
+  lead_name: string;
+  custom_preferred_contact_method: CustomPreferredContactMethod;
+  custom_birthday: string | null; // Assuming custom_birthday is string or null
+  custom_anniversary_date: string | null;
+  custom_latest_visit_status: CustomLatestVisitStatus;
+  custom_area: string | null;
+  custom_city1: string | null;
+  custom_postal_code: string | null;
+  custom_address_copy: string | null;
+  custom_state_copy: string | null;
+  custom_city_copy: string | null;
+  custom_postal_code_copy: string | null;
+  custom_state1: string | null;
+  custom_repeat_customer: string | null;
+  custom_address: string | null;
+  custom_rented: number;
+  custom_owned: number;
+  custom_parentalfriend: number;
+  custom_current_residence_type: string | null;
+  custom_property_name: string | null;
+  custom_project: string | null;
+  custom_project_name_data: string | null;
+  locality: string | null;
+  property_name: string | null;
+  custom_financing_dea: string;
+  custom_expected_time_of_purchase: string;
+  custom_budget_range: string;
+  custom_purpose_of_purchase: CustomPurposeOfPurchase;
+  custom_attednded_by: string | null;
+  custom_sales_manager: string | null;
+  lead_owner: LeadOwner;
+  source: string | null;
+  custom_visit_status: CustomVisitStatus;
+  campaign_name: string | null;
+  lead_source: string | null;
+  custom_cp_firm_name: string | null;
+  custom_channel_partner_name: string | null;
+  custom_channel_partner_mobile: string | null;
+  team_leader: string | null;
+  project_name: string | null;
+  property: string | null;
+  job_title: string | null;
+  custom_remider_date: string | null;
+  custom_reminder_time_minutes: number | null;
+  custom_reminder_time_hours: number | null;
+  custom_reminder_time_format: CustomReminderTimeFormat;
+  lead_result: LeadResult;
+  custom_reminder_notes: string | null;
+  gender: string | null;
+  status: Status;
+  customer: string | null;
+  type: string;
+  request_type: string;
+  website: string | null;
+  phone: string;
+  phone_ext: string | null;
+  company_name: string | null;
+  no_of_employees: NoOfEmployees;
+  annual_revenue: number;
+  industry: string | null;
+  market_segment: string | null;
+  territory: string | null;
+  fax: string | null;
+  qualification_status: QualificationStatus;
+  qualified_by: string | null;
+  qualified_on: string | null;
+  company: Company;
+  language: Language;
+  image: string;
+  title: string;
+  disabled: number;
+  unsubscribed: number;
+  blog_subscriber: number;
+  custom_mobile_number_1: string | null;
+  custom_mobile_number_2: string | null;
+  custom_mobile_number_3: string | null;
+  custom_email_id_1: string | null;
+  custom_email_id_2: string | null;
+  custom_email_id_3: string | null;
+  city: string | null;
+  state: string | null;
+  country: Country;
+  custom_budget: CustomBudget;
+  custom_occupation: string | null;
+  team_leader_name: string | null;
+  assigned_to: string | null;
+  custom_employee_name: string | null;
+  custom_mobile_no: string | null;
+  team: string | null;
+  configuration: string | null;
+  doctype: string;
+  secondary_location: any[];
+  custom_intersted_property: any[];
+  notes: Note[];
+  custom_unit_type: any[];
+  custom_property_type: any[];
+};
+
+export interface Note {
+  name: number;
+  owner: string;
+  creation: Date;
+  modified: Date;
+  modified_by: string;
+  docstatus: number;
+  idx: number;
+  note: string;
+  added_by: string;
+  added_on: Date;
+  parent: string;
+  parentfield: string;
+  parenttype: string;
+  doctype: string;
+}
+
+// Task Types
+export interface VisitListType {
+  data: VisitDetailsType[];
+}
+
+export interface VisitDetailsType {
+  name: string;
+  owner: string;
+  creation: Date;
+  modified: Date;
+  modified_by: string;
+  docstatus: number;
+  idx: number;
+  type: string;
+  full_name: string;
+  mobile_number: string;
+  date: Date;
+  property_name: null;
+  locality: null;
+  lead: string;
+  project_name: string;
+  time_format: string;
+  time_hrs: string;
+  time_mins: string;
+  is_visit_started: number;
+  is_location: number;
+  is_visit_done: number;
+  status: string;
+  assigned_to: null;
+  assigned_to_employee_name: null;
+  comment: null;
+  location: null;
+  start_time: string;
+  end_time: string;
+}
+
+// // Task Types
+// export interface ToDoListType {
+//   data: Datum[];
+// }
+
+// export interface Datum {
+//   name:                    string;
+//   owner:                   string;
+//   creation:                Date;
+//   modified:                Date;
+//   modified_by:             string;
+//   docstatus:               number;
+//   idx:                     number;
+//   status:                  string;
+//   priority:                string;
+//   custom_type_of_activity: null;
+//   color:                   null;
+//   date:                    Date;
+//   allocated_to:            string;
+//   custom_due_datetime:     null;
+//   description:             string;
+//   reference_type:          string;
+//   reference_name:          string;
+//   role:                    null;
+//   assigned_by:             string;
+//   assigned_by_full_name:   string;
+//   sender:                  null;
+//   assignment_rule:         null;
+// }

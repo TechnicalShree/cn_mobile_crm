@@ -10,6 +10,11 @@ const API_END_POINTS = {
   getMeetingList: "/api/resource/Daily Visit Schedule",
 
   getLeadList: "/api/resource/Lead",
+  // Keep duplicate Just in case you need to replace it with a custom method
+  getLeadDetails: "/api/resource/Lead",
+  getVisitList: "/api/resource/Daily Visit Schedule",
+  todoApi: "/api/resource/ToDo",
+  getTaskList: "/api/resource/ToDo",
 };
 
 export default API_END_POINTS;

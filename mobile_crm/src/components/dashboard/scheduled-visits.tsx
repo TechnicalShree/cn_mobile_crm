@@ -1,11 +1,16 @@
-import { Card, CardHeader, CardTitle, CardContent } from "../../components/ui/card";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+} from "../../components/ui/card";
 import { Badge } from "../../components/ui/badge";
 import { MapPin, Clock } from "lucide-react";
 import { useFetchMeetingList } from "../../services/query";
 
 export default function ScheduledVisits() {
-  const { data: todayVisits } = useFetchMeetingList();
-  
+  const { data: todayVisits } = useFetchMeetingList({});
+
   return (
     <Card>
       <CardHeader className="pb-3">
@@ -31,13 +36,18 @@ export default function ScheduledVisits() {
                   <span>{visit.locality ?? "-"}</span>
                 </div>
               </div>
-              <Badge variant={visit.status === "completed" ? "secondary" : "outline"} className="rounded-[4px]">
+              <Badge
+                variant={visit.status === "completed" ? "secondary" : "outline"}
+                className="rounded-[4px]"
+              >
                 {visit.status}
               </Badge>
             </div>
           ))
         ) : (
-          <p className="py-2 text-sm text-center rounded-sm text-muted-foreground">No visits scheduled for today</p>
+          <p className="py-2 text-sm text-center rounded-sm text-muted-foreground">
+            No visits scheduled for today
+          </p>
         )}
       </CardContent>
     </Card>

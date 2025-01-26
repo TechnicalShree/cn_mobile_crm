@@ -3,72 +3,116 @@ import { Card } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
 import { Input } from "../components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
-import { ArrowLeft, Mail, Phone, MessageSquare, CheckSquare, FileText, ClipboardList, StickyNote, Edit, MapPin, Calendar as CalendarIcon, Clock } from "lucide-react";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
+import {
+  ArrowLeft,
+  Mail,
+  Phone,
+  FileText,
+  ClipboardList,
+  StickyNote,
+  Edit,
+  MapPin,
+  Clock,
+  CalendarIcon,
+} from "lucide-react";
 import { SiWhatsapp } from "react-icons/si";
 import PageContainer from "../components/layout/page-container";
-import { leads, tasks, notes, visits } from "../lib/mock-data";
 import { Link } from "wouter";
 import { Textarea } from "../components/ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../components/ui/dialog";
-import { cn } from "../lib/utils";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../components/ui/dialog";
 import { Calendar } from "../components/ui/calendar";
 import { useState } from "react";
 import { useToast } from "../hooks/use-toast";
-import { Clock as ClockIcon } from "lucide-react";
+import {
+  useFetchLeadDetails,
+  useFetchTaskList,
+  useFetchVisitList,
+} from "../services/query";
+import { format } from "date-fns";
+import { cn } from "../lib/utils";
+import { VisitDetailsType } from "../types/types";
 
 export default function LeadDetail() {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [location] = useLocation();
   const { toast } = useToast();
   const leadId = location.split("/").pop();
-  const lead = leads.find((l) => l.id === leadId);
-  const [selectedVisit, setSelectedVisit] = useState<typeof visits[0] | null>(null);
+  const [selectedVisit, setSelectedVisit] = useState<VisitDetailsType | null>(
+    null
+  );
   const [visitDialogOpen, setVisitDialogOpen] = useState(false);
   const [taskDialogOpen, setTaskDialogOpen] = useState(false);
   const [taskTitle, setTaskTitle] = useState("");
   const [taskDate, setTaskDate] = useState("");
   const [taskTime, setTaskTime] = useState("");
 
-  // Visit status management functions
-  const handleVisitAction = (visit: typeof visits[0]) => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        position => {
-          const { latitude, longitude } = position.coords;
-          // Here we would typically send this to the backend
-          console.log(`Location captured: ${latitude}, ${longitude}`);
+  const { data: leadDetails } = useFetchLeadDetails({
+    lead_id: leadId!,
+    options: { enabled: !!leadId },
+  });
+  const { data: visitList } = useFetchVisitList({
+    lead_id: leadId!,
+    options: { enabled: !!leadId },
+  });
+  const { data: taskList } = useFetchTaskList({
+    lead_id: leadId!,
+    options: { enabled: !!leadId },
+  });
 
-          if (visit.status === 'scheduled') {
-            toast({
-              title: "Visit Started",
-              description: "Your location has been recorded for the visit check-in.",
-            });
-            // Update visit status to in_progress
-          } else if (visit.status === 'in_progress') {
-            toast({
-              title: "Visit Completed",
-              description: "Visit has been marked as completed.",
-            });
-            // Update visit status to completed
-          }
-          setVisitDialogOpen(false);
-        },
-        error => {
-          toast({
-            title: "Location Error",
-            description: "Unable to get your location. Please enable location services.",
-            variant: "destructive",
-          });
-          console.error(error);
-        }
-      );
+  const lead = leadDetails?.data;
+
+  // Visit status management functions
+  const handleVisitAction = (visit: VisitDetailsType) => {
+    if (navigator.geolocation) {
+      // navigator.geolocation.getCurrentPosition(
+      //   (position) => {
+      //     const { latitude, longitude } = position.coords;
+      //     // Here we would typically send this to the backend
+      //     console.log(`Location captured: ${latitude}, ${longitude}`);
+      //     if (visit.status === "scheduled") {
+      //       toast({
+      //         title: "Visit Started",
+      //         description:
+      //           "Your location has been recorded for the visit check-in.",
+      //       });
+      //       // Update visit status to in_progress
+      //     } else if (visit.status === "in_progress") {
+      //       toast({
+      //         title: "Visit Completed",
+      //         description: "Visit has been marked as completed.",
+      //       });
+      //       // Update visit status to completed
+      //     }
+      //     setVisitDialogOpen(false);
+      //   },
+      //   (error) => {
+      //     toast({
+      //       title: "Location Error",
+      //       description:
+      //         "Unable to get your location. Please enable location services.",
+      //       variant: "destructive",
+      //     });
+      //     console.error(error);
+      //   }
+      // );
     }
   };
 
   const getVisitActionButton = (status: string) => {
     switch (status) {
-      case 'scheduled':
+      case "scheduled":
         return (
           <Button
             className="w-full mt-4"
@@ -77,7 +121,7 @@ export default function LeadDetail() {
             Check In
           </Button>
         );
-      case 'in_progress':
+      case "in_progress":
         return (
           <Button
             className="w-full mt-4"
@@ -97,7 +141,7 @@ export default function LeadDetail() {
         <div className="flex items-center mb-4">
           <Link href="/mobile_crm/leads">
             <Button variant="ghost" size="sm" className="gap-2">
-              <ArrowLeft className="h-4 w-4" />
+              <ArrowLeft className="w-4 h-4" />
               Back
             </Button>
           </Link>
@@ -108,10 +152,6 @@ export default function LeadDetail() {
       </PageContainer>
     );
   }
-
-  const leadTasks = tasks.filter(task => task.leadId.toString() === lead.id);
-  const leadNotes = notes.filter(note => note.leadId.toString() === lead.id);
-  const leadVisits = visits.filter(visit => visit.leadId === lead.id);
 
   const handleAddTask = () => {
     // Here we would typically make an API call to add the task
@@ -135,7 +175,7 @@ export default function LeadDetail() {
       <div className="flex items-center mb-4">
         <Link href="/mobile_crm/leads">
           <Button variant="ghost" size="sm" className="gap-2">
-            <ArrowLeft className="h-4 w-4" />
+            <ArrowLeft className="w-4 h-4" />
             Back
           </Button>
         </Link>
@@ -146,16 +186,21 @@ export default function LeadDetail() {
         <div className="space-y-3">
           {/* Status Tags */}
           <div className="flex flex-wrap gap-2">
-            <Badge variant={lead.status === "Do Not Contact" ? "destructive" : "secondary"}>
+            <Badge
+              variant={
+                lead.status === "Do Not Contact" ? "destructive" : "secondary"
+              }
+              className="rounded-sm"
+            >
               🔴 {lead.status}
             </Badge>
             {lead.qualification_status && (
-              <Badge variant="outline">
+              <Badge variant="outline" className="rounded-sm">
                 🟡 {lead.qualification_status}
               </Badge>
             )}
             {lead.territory && (
-              <Badge variant="outline">
+              <Badge variant="outline" className="rounded-sm">
                 🌍 {lead.territory}
               </Badge>
             )}
@@ -182,7 +227,7 @@ export default function LeadDetail() {
               variant="outline"
               size="sm"
               className="gap-1"
-              onClick={() => window.open(`mailto:${lead.email}`)}
+              onClick={() => window.open(`mailto:${lead.email_id}`)}
             >
               <Mail className="h-3.5 w-3.5" />
               Email
@@ -191,7 +236,7 @@ export default function LeadDetail() {
               variant="outline"
               size="sm"
               className="gap-1"
-              onClick={() => window.open(`https://wa.me/${lead.whatsapp_id}`)}
+              onClick={() => window.open(`https://wa.me/${lead.whatsapp_no}`)}
             >
               <SiWhatsapp className="h-3.5 w-3.5" />
               WhatsApp
@@ -201,7 +246,7 @@ export default function LeadDetail() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="gap-1"
+                  className="gap-1 rounded-md"
                 >
                   <Edit className="h-3.5 w-3.5" />
                   Edit
@@ -213,9 +258,32 @@ export default function LeadDetail() {
                 </DialogHeader>
                 <div className="flex-1 -mx-6 -mb-6">
                   <iframe
-                    src={`https://operate.hybrowlabs.com/lead/${lead.id}`}
+                    src={`/app/lead/${lead.name}`}
                     className="w-full h-full rounded-b-lg"
-                    style={{ height: 'calc(90vh - 4rem)' }}
+                    style={{ height: "calc(90vh - 4rem)" }}
+                    onLoad={(e: any) => {
+                      const iframe = e.target;
+                      const iframeDocument =
+                        iframe?.contentDocument ||
+                        iframe?.contentWindow?.document;
+
+                      // This script hides the navbar with the class 'navbar-expand'
+                      const navbar = iframeDocument.querySelector(
+                        ".navbar.navbar-expand"
+                      );
+                      if (navbar) {
+                        navbar.style.display = "none";
+                      }
+
+                      // Hide the <chatnext-app> element
+                      const chatnextApp =
+                        iframeDocument.querySelector("chatnext-app");
+                      if (chatnextApp) {
+                        setTimeout(() => {
+                          chatnextApp.style.display = "none";
+                        }, 500);
+                      }
+                    }}
                   />
                 </div>
               </DialogContent>
@@ -226,65 +294,78 @@ export default function LeadDetail() {
 
       {/* Tabbed Content */}
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="w-full justify-start border-b rounded-none px-0">
+        <TabsList className="justify-start w-full px-1 border-b rounded-md">
           <TabsTrigger value="overview" className="gap-2">
-            <FileText className="h-4 w-4" />
+            <FileText className="w-4 h-4" />
             Overview
           </TabsTrigger>
           <TabsTrigger value="tasks" className="gap-2">
-            <ClipboardList className="h-4 w-4" />
+            <ClipboardList className="w-4 h-4" />
             Tasks
-            <span className="ml-1 text-xs">({leadTasks.length})</span>
+            {/* <span className="ml-1 text-xs">({leadTasks.length})</span> */}
           </TabsTrigger>
           <TabsTrigger value="notes" className="gap-2">
-            <StickyNote className="h-4 w-4" />
+            <StickyNote className="w-4 h-4" />
             Notes
-            <span className="ml-1 text-xs">({leadNotes.length})</span>
+            {/* <span className="ml-1 text-xs">({leadNotes.length})</span> */}
           </TabsTrigger>
           <TabsTrigger value="visits" className="gap-2">
-            <MapPin className="h-4 w-4" />
+            <MapPin className="w-4 h-4" />
             Visits
-            <span className="ml-1 text-xs">({leadVisits.length})</span>
+            {/* <span className="ml-1 text-xs">({leadVisits.length})</span> */}
           </TabsTrigger>
         </TabsList>
 
         {/* Overview Tab */}
         <TabsContent value="overview">
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid gap-4 md:grid-cols-2">
             {/* Contact Information */}
             <Card className="p-6">
-              <h2 className="text-base font-semibold mb-4">Contact Information</h2>
+              <h2 className="mb-4 text-base font-semibold">
+                Contact Information
+              </h2>
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <Mail className="h-4 w-4 text-muted-foreground shrink-0" />
-                  <span className="text-sm">{lead.email}</span>
+                  <Mail className="w-4 h-4 text-muted-foreground shrink-0" />
+                  <span className="text-sm">{lead.email_id || "-"}</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Phone className="h-4 w-4 text-muted-foreground shrink-0" />
-                  <span className="text-sm">{lead.phone}</span>
+                  <Phone className="w-4 h-4 text-muted-foreground shrink-0" />
+                  <span className="text-sm">{lead.mobile_no || "-"}</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <SiWhatsapp className="h-4 w-4 text-muted-foreground shrink-0" />
-                  <span className="text-sm">{lead.whatsapp_id} {lead.whatsapp_registered ? "(Registered)" : ""}</span>
+                  <SiWhatsapp className="w-4 h-4 text-muted-foreground shrink-0" />
+                  <span className="text-sm">
+                    {lead.whatsapp_no || "-"}{" "}
+                    {!!lead.whatsapp_no ? "(Registered)" : ""}
+                  </span>
                 </div>
               </div>
             </Card>
 
             {/* Company Details */}
             <Card className="p-6">
-              <h2 className="text-base font-semibold mb-4">Company Details</h2>
+              <h2 className="mb-4 text-base font-semibold">Company Details</h2>
               <div className="space-y-4">
                 <div>
-                  <p className="text-sm text-muted-foreground mb-1">Company Name</p>
-                  <p className="text-sm font-medium">{lead.company_name}</p>
+                  <p className="mb-1 text-sm text-muted-foreground">
+                    Company Name
+                  </p>
+                  <p className="text-sm font-medium">{lead.company || "-"}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground mb-1">Employees</p>
-                  <p className="text-sm font-medium">{lead.employees}</p>
+                  <p className="mb-1 text-sm text-muted-foreground">
+                    Employees
+                  </p>
+                  <p className="text-sm font-medium">
+                    {lead.no_of_employees || "-"}
+                  </p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground mb-1">Territory</p>
-                  <p className="text-sm font-medium">{lead.territory}</p>
+                  <p className="mb-1 text-sm text-muted-foreground">
+                    Territory
+                  </p>
+                  <p className="text-sm font-medium">{lead.territory || "-"}</p>
                 </div>
               </div>
             </Card>
@@ -295,20 +376,34 @@ export default function LeadDetail() {
         <TabsContent value="tasks">
           <Card className="p-4">
             <div className="space-y-3">
-              {leadTasks.length > 0 ? (
-                leadTasks.map((task) => (
-                  <div key={task.id} className="flex items-center justify-between border-b pb-2 last:border-0">
+              {taskList?.data && taskList?.data.length > 0 ? (
+                taskList.data.map((task) => (
+                  <div
+                    key={task.name}
+                    className="flex items-center justify-between pb-2 border-b last:border-0"
+                  >
                     <div>
-                      <p className="text-sm font-medium">{task.title}</p>
-                      <p className="text-xs text-muted-foreground">Due: {task.dueDate}</p>
+                      <p className="w-full text-sm font-medium truncate">
+                        {task.description}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Due: {format(new Date(task.date), "dd MMM, yyyy")}
+                      </p>
                     </div>
-                    <Badge variant={task.status === "completed" ? "secondary" : "outline"}>
+                    <Badge
+                      variant={
+                        task.status === "completed" ? "secondary" : "outline"
+                      }
+                      className="rounded-sm"
+                    >
                       {task.status}
                     </Badge>
                   </div>
                 ))
               ) : (
-                <p className="text-sm text-center text-muted-foreground">No tasks found</p>
+                <p className="text-sm text-center text-muted-foreground">
+                  No tasks found
+                </p>
               )}
             </div>
           </Card>
@@ -318,17 +413,19 @@ export default function LeadDetail() {
         <TabsContent value="notes">
           <Card className="p-4">
             <div className="space-y-3">
-              {leadNotes.length > 0 ? (
-                leadNotes.map((note) => (
-                  <div key={note.id} className="border-b pb-2 last:border-0">
-                    <p className="text-sm">{note.content}</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Added on {new Date(note.createdAt).toLocaleDateString()}
+              {leadDetails.data && leadDetails.data.notes.length > 0 ? (
+                leadDetails.data.notes.map((note) => (
+                  <div key={note.name} className="pb-2 border-b last:border-0">
+                    <div dangerouslySetInnerHTML={{ __html: note.note }}></div>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Added on {new Date(note.creation).toLocaleDateString()}
                     </p>
                   </div>
                 ))
               ) : (
-                <p className="text-sm text-center text-muted-foreground">No notes found</p>
+                <p className="text-sm text-center text-muted-foreground">
+                  No notes found
+                </p>
               )}
             </div>
           </Card>
@@ -338,13 +435,14 @@ export default function LeadDetail() {
         <TabsContent value="visits">
           <Card className="p-4">
             <div className="space-y-3">
-              {leadVisits.length > 0 ? (
-                leadVisits.map((visit) => (
+              {visitList?.data && visitList?.data.length > 0 ? (
+                visitList.data.map((visit) => (
                   <div
-                    key={visit.id}
+                    key={visit.name}
                     className={cn(
                       "flex items-center justify-between border-b pb-2 last:border-0",
-                      visit.status !== "completed" && "cursor-pointer hover:bg-accent/50 p-2 rounded-lg -mx-2"
+                      visit.status !== "completed" &&
+                        "cursor-pointer hover:bg-accent/50 p-2 rounded-lg -mx-2"
                     )}
                     onClick={() => {
                       if (visit.status !== "completed") {
@@ -354,14 +452,20 @@ export default function LeadDetail() {
                     }}
                   >
                     <div>
-                      <p className="text-sm font-medium">{visit.purpose}</p>
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
-                        <MapPin className="h-3 w-3" />
+                      <p className="text-sm font-medium">
+                        {visit.project_name}
+                      </p>
+                      <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
+                        <MapPin className="w-3 h-3" />
                         {visit.location}
                       </div>
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <CalendarIcon className="h-3 w-3" />
-                        {visit.date} at {visit.time}
+                        <CalendarIcon className="w-3 h-3" />
+                        {format(
+                          new Date(visit.creation),
+                          "dd MMM, yyyy"
+                        )} at {visit.time_hrs}:{visit.time_mins}{" "}
+                        {visit.time_format}
                       </div>
                     </div>
                     <Badge
@@ -369,8 +473,8 @@ export default function LeadDetail() {
                         visit.status === "completed"
                           ? "secondary"
                           : visit.status === "in_progress"
-                            ? "default"
-                            : "outline"
+                          ? "default"
+                          : "outline"
                       }
                     >
                       {visit.status}
@@ -378,7 +482,9 @@ export default function LeadDetail() {
                   </div>
                 ))
               ) : (
-                <p className="text-sm text-center text-muted-foreground">No visits found</p>
+                <p className="text-sm text-center text-muted-foreground">
+                  No visits found
+                </p>
               )}
             </div>
           </Card>
@@ -390,31 +496,39 @@ export default function LeadDetail() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {selectedVisit?.status === 'scheduled' ? 'Check In to Visit' : 'Complete Visit'}
+              {selectedVisit?.status === "scheduled"
+                ? "Check In to Visit"
+                : "Complete Visit"}
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 pt-4">
+          <div className="pt-4 space-y-4">
             <div className="space-y-2">
-              <h3 className="font-medium">{selectedVisit?.purpose}</h3>
+              <h3 className="font-medium">{selectedVisit?.project_name}</h3>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <MapPin className="h-4 w-4" />
+                <MapPin className="w-4 h-4" />
                 {selectedVisit?.location}
               </div>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Clock className="h-4 w-4" />
-                {selectedVisit?.time}
+                <Clock className="w-4 h-4" />
+                {selectedVisit?.time_hrs}:{selectedVisit?.time_mins}{" "}
+                {selectedVisit?.time_format}
               </div>
             </div>
 
-            <div className="bg-accent/50 p-4 rounded-lg">
-              <p className="text-sm">Your current location will be recorded to complete the visit.</p>
+            <div className="p-4 rounded-lg bg-accent/50">
+              <p className="text-sm">
+                Your current location will be recorded to complete the visit.
+              </p>
             </div>
 
-            <div className="flex gap-2 justify-end pt-2">
-              <Button variant="outline" onClick={() => setVisitDialogOpen(false)}>
+            <div className="flex justify-end gap-2 pt-2">
+              <Button
+                variant="outline"
+                onClick={() => setVisitDialogOpen(false)}
+              >
                 Cancel
               </Button>
-              {getVisitActionButton(selectedVisit?.status || 'scheduled')}
+              {getVisitActionButton(selectedVisit?.status || "scheduled")}
             </div>
           </div>
         </DialogContent>
@@ -426,7 +540,7 @@ export default function LeadDetail() {
           <DialogHeader>
             <DialogTitle>Add Task</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 pt-4">
+          <div className="pt-4 space-y-4">
             <div className="space-y-2">
               <label className="text-sm font-medium">Task Title</label>
               <Input
@@ -453,8 +567,11 @@ export default function LeadDetail() {
                 />
               </div>
             </div>
-            <div className="flex gap-2 justify-end pt-2">
-              <Button variant="outline" onClick={() => setTaskDialogOpen(false)}>
+            <div className="flex justify-end gap-2 pt-2">
+              <Button
+                variant="outline"
+                onClick={() => setTaskDialogOpen(false)}
+              >
                 Cancel
               </Button>
               <Button onClick={handleAddTask}>Add Task</Button>
@@ -464,16 +581,25 @@ export default function LeadDetail() {
       </Dialog>
 
       {/* Floating Action Buttons */}
-      <div className="fixed bottom-4 right-4 flex gap-2">
-        <Button size="sm" variant="secondary" className="rounded-full shadow-lg" onClick={() => setTaskDialogOpen(true)}>
-          <ClipboardList className="h-4 w-4 mr-2" />
+      <div className="fixed flex gap-2 bottom-4 right-4">
+        <Button
+          size="sm"
+          variant="secondary"
+          className="rounded-md shadow-lg"
+          onClick={() => setTaskDialogOpen(true)}
+        >
+          <ClipboardList className="w-4 h-4 mr-2" />
           Task
         </Button>
 
         <Dialog>
           <DialogTrigger asChild>
-            <Button size="sm" variant="secondary" className="rounded-full shadow-lg">
-              <StickyNote className="h-4 w-4 mr-2" />
+            <Button
+              size="sm"
+              variant="secondary"
+              className="rounded-md shadow-lg"
+            >
+              <StickyNote className="w-4 h-4 mr-2" />
               Note
             </Button>
           </DialogTrigger>
@@ -482,7 +608,10 @@ export default function LeadDetail() {
               <DialogTitle>Add Note</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
-              <Textarea placeholder="Type your note..." className="min-h-[100px]" />
+              <Textarea
+                placeholder="Type your note..."
+                className="min-h-[100px]"
+              />
               <div className="flex justify-end">
                 <Button>Add Note</Button>
               </div>
@@ -492,8 +621,12 @@ export default function LeadDetail() {
 
         <Dialog>
           <DialogTrigger asChild>
-            <Button size="sm" variant="default" className="rounded-full shadow-lg">
-              <MapPin className="h-4 w-4 mr-2" />
+            <Button
+              size="sm"
+              variant="default"
+              className="rounded-md shadow-lg"
+            >
+              <MapPin className="w-4 h-4 mr-2" />
               Meeting
             </Button>
           </DialogTrigger>
@@ -501,7 +634,7 @@ export default function LeadDetail() {
             <DialogHeader>
               <DialogTitle>Schedule Meeting</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4 pt-4">
+            <div className="pt-4 space-y-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium">Purpose</label>
                 <Input placeholder="Meeting purpose (e.g. Product Demo, Service Follow-up)" />
@@ -513,7 +646,7 @@ export default function LeadDetail() {
                   mode="single"
                   selected={date}
                   onSelect={setDate}
-                  className="rounded-md border mx-auto"
+                  className="mx-auto border rounded-md"
                 />
               </div>
 
@@ -531,23 +664,25 @@ export default function LeadDetail() {
               {/* Location tracking button */}
               <Button
                 variant="outline"
-                className="w-full gap-2 h-auto py-4"
+                className="w-full h-auto gap-2 py-4"
                 onClick={() => {
                   if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(
-                      position => {
+                      (position) => {
                         console.log(position.coords);
                         // Here we would typically save the coordinates
                       },
-                      error => console.error(error)
+                      (error) => console.error(error)
                     );
                   }
                 }}
               >
-                <MapPin className="h-4 w-4" />
+                <MapPin className="w-4 h-4" />
                 <div className="flex flex-col items-start text-left">
                   <span className="font-medium">Use Current Location</span>
-                  <span className="text-xs text-muted-foreground">Get exact coordinates for accurate visit tracking</span>
+                  <span className="text-xs text-muted-foreground">
+                    Get exact coordinates for accurate visit tracking
+                  </span>
                 </div>
               </Button>
 

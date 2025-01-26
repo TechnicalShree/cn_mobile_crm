@@ -12,7 +12,7 @@ import { UserPlus, Users } from "lucide-react";
 import { useFetchLeadAndOpportunityStats } from "../services/query";
 
 export default function Dashboard() {
-  const { data: dashboardLeadStats } = useFetchLeadAndOpportunityStats();
+  const { data: dashboardLeadStats } = useFetchLeadAndOpportunityStats({});
 
   const shortcuts = [
     {
