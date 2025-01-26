@@ -1,18 +1,16 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import PageContainer from "../components/layout/page-container";
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
 import { Search, ArrowLeft, UserPlus } from "lucide-react";
-import { leads } from "../lib/mock-data";
 import { Tabs, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { Link, useSearchParams } from "wouter";
 import LeadCard from "../components/leads/lead-card";
 import FilterDialog from "../components/leads/filter-dialog";
-import type { Lead } from "../lib/types";
 import { useFetchLeadList } from "../services/query";
 import { EmptyState } from "../components/leads/empty-record";
 
-const TabName = {
+export const TabName = {
   ALL: "All",
   LEAD: "Lead",
   OPEN: "Open",
@@ -51,57 +49,76 @@ export default function Leads() {
   const status = searchParams.get("status") || TabName.ALL;
   const [filters, setFilters] = useState<Record<string, string>>({});
 
-  const leadFilters = useMemo(() => {
-    const filters = [];
+  const leadOrFilters = useMemo(() => {
+    const orFilters = [];
     switch (status) {
       case TabName.ALL:
-        filters.push([
+        orFilters.push([
           "lead_status",
           "in",
           ["Lead", "Opportunity", "Quotation", "Open"],
         ]);
         break;
       case TabName.LEAD:
-        filters.push(["lead_status", "=", "Lead"]);
+        orFilters.push(["lead_status", "=", "Lead"]);
         break;
       case TabName.OPPORTUNITY:
-        filters.push(["lead_status", "=", "Opportunity"]);
+        orFilters.push(["lead_status", "=", "Opportunity"]);
         break;
       case TabName.QUOTATION:
-        filters.push(["lead_status", "=", "Quotation"]);
+        orFilters.push(["lead_status", "=", "Quotation"]);
         break;
       case TabName.OPEN:
-        filters.push(["lead_status", "=", "Open"]);
+        orFilters.push(["lead_status", "=", "Open"]);
         break;
       case TabName.HOT:
-        filters.push(["lead_status", "=", "Hot"]);
+        orFilters.push(["lead_status", "=", "Hot"]);
         break;
       case TabName.UNRESPONDED:
-        filters.push(["lead_status", "=", "Unresponded"]);
+        orFilters.push(["lead_status", "=", "Unresponded"]);
         break;
     }
 
-    return filters;
+    return orFilters;
   }, [status]);
 
-  const leadOrFilters = useMemo(() => {
-    const orFilters: string[][] = [];
+  const leadFilters = useMemo(() => {
+    const filtersList: string[][] = [];
+
+    const addFilter = (
+      field: string,
+      operator: string,
+      value: string | undefined
+    ) => {
+      if (value) {
+        filtersList.push([field, operator, value]);
+      }
+    };
+
+    // Add filters based on the provided conditions
+    addFilter("lead_status", "=", filters.status);
+    addFilter("territory", "=", filters.territory);
+    addFilter(
+      "campaign_name",
+      "like",
+      filters.campaign ? `%${filters.campaign}%` : undefined
+    );
+    addFilter(
+      "company",
+      "like",
+      filters.company ? `%${filters.company}%` : undefined
+    );
 
     if (searchQuery) {
-      orFilters.push(["name", "like", `%${searchQuery}%`]);
-      orFilters.push(["mobile_no", "like", `%${searchQuery}%`]);
-      orFilters.push(["lead_name", "like", `%${searchQuery}%`]);
-      orFilters.push(["email_id", "like", `%${searchQuery}%`]);
-
-      return orFilters;
-    } else {
-      return orFilters.filter((filter) => filter[1] !== "like");
+      ["name", "mobile_no", "lead_name", "email_id"].forEach((field) => {
+        addFilter(field, "like", `%${searchQuery}%`);
+      });
     }
-  }, [searchQuery]);
+
+    return filtersList;
+  }, [searchQuery, filters]);
 
   const { data: leadList } = useFetchLeadList(leadFilters, leadOrFilters);
-
-  console.log("-----------we-----", filters);
 
   return (
     <PageContainer>
@@ -131,7 +148,12 @@ export default function Leads() {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <FilterDialog filters={filters} onFilterChange={setFilters} />
+        <FilterDialog
+          status={status}
+          filters={filters}
+          onFilterChange={setFilters}
+          key={filters.toString()}
+        />
       </div>
 
       {/* Tabs */}
