@@ -716,12 +716,40 @@ export default function LeadDetail() {
 
               <div className="space-y-2">
                 <label className="text-sm font-medium">Date</label>
-                <Calendar
-                  mode="single"
-                  selected={date}
-                  onSelect={setDate}
-                  className="mx-auto border rounded-md"
-                />
+                {/* <div className="flex justify-center">
+                  <Calendar
+                    mode="single"
+                    selected={date}
+                    onSelect={(date) => date && setDate(date)}
+                    className="border-0 rounded-lg"
+                    classNames={{
+                      months:
+                        "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
+                      month: "space-y-4 w-full",
+                      caption: "flex justify-center relative items-center h-10",
+                      caption_label: "text-base font-medium",
+                      nav: "flex items-center gap-1",
+                      nav_button:
+                        "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 absolute",
+                      nav_button_previous: "left-1",
+                      nav_button_next: "right-1",
+                      table: "w-full border-collapse",
+                      head_row: "flex w-full gap-0.5 mb-2",
+                      head_cell:
+                        "text-muted-foreground rounded-md w-9 font-normal text-sm",
+                      row: "flex w-full gap-0.5 mt-2",
+                      cell: "text-center text-sm relative p-0 hover:bg-accent hover:text-accent-foreground rounded-full w-9 h-9 [&:has([aria-selected])]:bg-transparent first:[&:has([aria-selected])]:bg-transparent last:[&:has([aria-selected])]:bg-transparent focus-within:relative focus-within:z-20",
+                      day: "h-9 w-9 p-0 font-normal text-base aria-selected:opacity-100 hover:bg-accent hover:text-accent-foreground rounded-full",
+                      day_today: "bg-accent/20 text-accent-foreground",
+                      day_outside: "opacity-50",
+                      day_disabled: "text-muted-foreground opacity-50",
+                      day_range_middle:
+                        "aria-selected:bg-accent aria-selected:text-accent-foreground",
+                      day_selected:
+                        "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground rounded-full",
+                    }}
+                  />
+                </div> */}
               </div>
 
               <div className="grid grid-cols-2 gap-4">

@@ -1,5 +1,5 @@
 import { Switch, Route } from "wouter";
-import { FrappeProvider } from 'frappe-react-sdk'
+import { FrappeProvider } from "frappe-react-sdk";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "./components/ui/toaster";
 import { queryClient } from "./lib/queryClient";
@@ -8,30 +8,31 @@ import Leads from "./pages/leads";
 import LeadDetail from "./pages/lead-detail";
 import Visits from "./pages/visits";
 import NotFound from "./pages/not-found";
+import "@mantine/dates/styles.css";
 
 function Router() {
-	return (
-	  <Switch>
-		<Route path="/mobile_crm" component={Dashboard} />
-		<Route path="/mobile_crm/leads" component={Leads} />
-		<Route path="/mobile_crm/leads/:id" component={LeadDetail} />
-		<Route path="/mobile_crm/visits" component={Visits} />
-		<Route component={NotFound} />
-	  </Switch>
-	);
-  }
+  return (
+    <Switch>
+      <Route path="/mobile_crm" component={Dashboard} />
+      <Route path="/mobile_crm/leads" component={Leads} />
+      <Route path="/mobile_crm/leads/:id" component={LeadDetail} />
+      <Route path="/mobile_crm/visits" component={Visits} />
+      <Route component={NotFound} />
+    </Switch>
+  );
+}
 
 function App() {
   return (
-	<div className="App">
-	  <FrappeProvider>
-		<QueryClientProvider client={queryClient}>
-			<Router />
-			<Toaster />
-		</QueryClientProvider>
-	  </FrappeProvider>
-	</div>
-  )
+    <div className="App">
+      <FrappeProvider>
+        <QueryClientProvider client={queryClient}>
+          <Router />
+          <Toaster />
+        </QueryClientProvider>
+      </FrappeProvider>
+    </div>
+  );
 }
 
-export default App
+export default App;
