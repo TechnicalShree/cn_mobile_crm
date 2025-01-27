@@ -15,6 +15,7 @@ const API_END_POINTS = {
   getVisitList: "/api/resource/Daily Visit Schedule",
   todoApi: "/api/resource/ToDo",
   getTaskList: "/api/resource/ToDo",
+  crmNote: "/api/resource/CRM Note",
 };
 
 export default API_END_POINTS;

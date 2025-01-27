@@ -27,6 +27,7 @@ import { Link } from "wouter";
 import { Textarea } from "../components/ui/textarea";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -43,6 +44,10 @@ import {
 import { format } from "date-fns";
 import { cn } from "../lib/utils";
 import { VisitDetailsType } from "../types/types";
+import {
+  useSubmitNoteDetails,
+  useSubmitTaskDetails,
+} from "../services/mutation";
 
 export default function LeadDetail() {
   const [date, setDate] = useState<Date | undefined>(new Date());
@@ -58,17 +63,61 @@ export default function LeadDetail() {
   const [taskDate, setTaskDate] = useState("");
   const [taskTime, setTaskTime] = useState("");
 
-  const { data: leadDetails } = useFetchLeadDetails({
+  const [note, setNote] = useState("");
+
+  const { data: leadDetails, refetch: refetchLead } = useFetchLeadDetails({
     lead_id: leadId!,
     options: { enabled: !!leadId },
   });
-  const { data: visitList } = useFetchVisitList({
+  const { data: visitList, refetch: refetchVisit } = useFetchVisitList({
     lead_id: leadId!,
     options: { enabled: !!leadId },
   });
   const { data: taskList } = useFetchTaskList({
     lead_id: leadId!,
     options: { enabled: !!leadId },
+  });
+
+  const { mutate: submitNote } = useSubmitNoteDetails({
+    options: {
+      onError: () => {
+        toast({
+          title: "Error",
+          description: "Something went wrong. Please try again.",
+        });
+      },
+      onSuccess: () => {
+        refetchLead();
+        toast({
+          title: "Note Added",
+          description: "Your note has been successfully created.",
+        });
+      },
+    },
+  });
+
+  const { mutate: submitTask } = useSubmitTaskDetails({
+    options: {
+      onError: () => {
+        toast({
+          title: "Error",
+          description: "Something went wrong. Please try again.",
+        });
+      },
+      onSuccess: () => {
+        refetchVisit();
+
+        setTaskTitle("");
+        setTaskDate("");
+        setTaskTime("");
+        setTaskDialogOpen(false);
+
+        toast({
+          title: "Task Added",
+          description: "Your task has been successfully created.",
+        });
+      },
+    },
   });
 
   const lead = leadDetails?.data;
@@ -135,6 +184,18 @@ export default function LeadDetail() {
     }
   };
 
+  const haandleAddNote = async () => {
+    await submitNote({
+      note: note,
+      added_by: "Administrator",
+      added_on: format(new Date(), "yyyy-MM-dd HH:mm:ss.SSSSSS"),
+      parent: leadDetails?.data.name || "",
+      parentfield: "notes",
+      parenttype: "Lead",
+      doctype: "CRM Note",
+    });
+  };
+
   if (!lead) {
     return (
       <PageContainer>
@@ -154,19 +215,19 @@ export default function LeadDetail() {
   }
 
   const handleAddTask = () => {
-    // Here we would typically make an API call to add the task
-    console.log("Adding task:", { taskTitle, taskDate, taskTime });
-
-    toast({
-      title: "Task Added",
-      description: "Your task has been successfully created.",
+    submitTask({
+      custom_type_of_activity: taskTitle,
+      date: format(new Date(taskDate), "yyyy-MM-dd"),
+      custom_due_datetime: format(
+        new Date(taskDate + " " + taskTime),
+        "yyyy-MM-dd HH:mm:ss.SSSSSS"
+      ),
+      reference_name: leadDetails?.data.name || "",
+      reference_type: "Lead",
+      description: taskTitle,
+      assigned_by: "Administrator",
+      assigned_by_full_name: "Administrator",
     });
-
-    // Reset form and close dialog
-    setTaskTitle("");
-    setTaskDate("");
-    setTaskTime("");
-    setTaskDialogOpen(false);
   };
 
   return (
@@ -383,9 +444,18 @@ export default function LeadDetail() {
                     className="flex items-center justify-between pb-2 border-b last:border-0"
                   >
                     <div>
-                      <p className="w-full text-sm font-medium truncate">
-                        {task.description}
-                      </p>
+                      {(!!task.custom_type_of_activity && (
+                        <p className="w-full text-sm font-medium">
+                          {task.custom_type_of_activity}
+                        </p>
+                      )) ||
+                        (task.description && (
+                          <div
+                            dangerouslySetInnerHTML={{
+                              __html: task.description,
+                            }}
+                          />
+                        ))}
                       <p className="text-xs text-muted-foreground">
                         Due: {format(new Date(task.date), "dd MMM, yyyy")}
                       </p>
@@ -611,9 +681,13 @@ export default function LeadDetail() {
               <Textarea
                 placeholder="Type your note..."
                 className="min-h-[100px]"
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
               />
               <div className="flex justify-end">
-                <Button>Add Note</Button>
+                <DialogClose>
+                  <Button onClick={haandleAddNote}>Add Note</Button>
+                </DialogClose>
               </div>
             </div>
           </DialogContent>

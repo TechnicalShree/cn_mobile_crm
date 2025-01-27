@@ -128,3 +128,28 @@ export const getTaskList =
 //         ]),
 //       },
 //     });
+
+// Mutation services
+export const postNoteDetails = <TData, TVariables>(): ((
+  formData: TVariables
+) => Promise<TData>) => {
+  return async (formData) => {
+    return await requestWrapper<TData>({
+      url: API_END_POINTS.crmNote,
+      method: "POST",
+      data: JSON.stringify(formData),
+    });
+  };
+};
+
+export const postTaskDetails = <TData, TVariables>(): ((
+  formData: TVariables
+) => Promise<TData>) => {
+  return async (formData) => {
+    return await requestWrapper<TData>({
+      url: API_END_POINTS.todoApi,
+      method: "POST",
+      data: JSON.stringify(formData),
+    });
+  };
+};

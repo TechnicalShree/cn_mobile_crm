@@ -38,6 +38,31 @@ type ToDoType = {
   assignment_rule: null;
 };
 
+export type PostToDoType = {
+  name?: string;
+  owner?: string;
+  creation?: Date;
+  modified?: Date;
+  modified_by?: string;
+  docstatus?: number;
+  idx?: number;
+  status?: string;
+  priority?: string;
+  custom_type_of_activity: null | string;
+  color?: null;
+  date: Date | string;
+  allocated_to?: null | string;
+  custom_due_datetime: Date | string;
+  description: string;
+  reference_type: string;
+  reference_name: string;
+  role?: null;
+  assigned_by: null | string;
+  assigned_by_full_name: null | string;
+  sender?: null;
+  assignment_rule?: null;
+};
+
 // Meeting Types
 export interface MeetingListType {
   data: MeetingType[];
@@ -430,7 +455,24 @@ export interface Note {
   idx: number;
   note: string;
   added_by: string;
-  added_on: Date;
+  added_on: Date | string;
+  parent: string;
+  parentfield: string;
+  parenttype: string;
+  doctype: string;
+}
+
+export interface PostNoteType {
+  name?: number;
+  owner?: string;
+  creation?: Date;
+  modified?: Date;
+  modified_by?: string;
+  docstatus?: number;
+  idx?: number;
+  note?: string;
+  added_by?: string;
+  added_on?: Date | string;
   parent: string;
   parentfield: string;
   parenttype: string;
