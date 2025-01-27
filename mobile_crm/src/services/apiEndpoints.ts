@@ -13,6 +13,7 @@ const API_END_POINTS = {
   // Keep duplicate Just in case you need to replace it with a custom method
   getLeadDetails: "/api/resource/Lead",
   getVisitList: "/api/resource/Daily Visit Schedule",
+  visitApi: "/api/resource/Daily Visit Schedule",
   todoApi: "/api/resource/ToDo",
   getTaskList: "/api/resource/ToDo",
   crmNote: "/api/resource/CRM Note",

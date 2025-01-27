@@ -33,7 +33,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../components/ui/dialog";
-import { Calendar } from "../components/ui/calendar";
 import { useState } from "react";
 import { useToast } from "../hooks/use-toast";
 import {
@@ -45,12 +44,16 @@ import { format } from "date-fns";
 import { cn } from "../lib/utils";
 import { VisitDetailsType } from "../types/types";
 import {
+  useSubmitMeetingDetails,
   useSubmitNoteDetails,
   useSubmitTaskDetails,
 } from "../services/mutation";
+import dayjs, { Dayjs } from "dayjs";
+import { StaticDatePicker } from "@mui/x-date-pickers/StaticDatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 export default function LeadDetail() {
-  const [date, setDate] = useState<Date | undefined>(new Date());
   const [location] = useLocation();
   const { toast } = useToast();
   const leadId = location.split("/").pop();
@@ -63,6 +66,25 @@ export default function LeadDetail() {
   const [taskDate, setTaskDate] = useState("");
   const [taskTime, setTaskTime] = useState("");
 
+  const [scheduleMeetingForm, setScheduleMeetingForm] = useState({
+    purpose: {
+      value: "",
+      error: false,
+    },
+    date: {
+      value: new Date(),
+      error: false,
+    },
+    time: {
+      value: "",
+      error: false,
+    },
+    location_area: {
+      value: "",
+      error: false,
+    },
+  });
+
   const [note, setNote] = useState("");
 
   const { data: leadDetails, refetch: refetchLead } = useFetchLeadDetails({
@@ -73,7 +95,7 @@ export default function LeadDetail() {
     lead_id: leadId!,
     options: { enabled: !!leadId },
   });
-  const { data: taskList } = useFetchTaskList({
+  const { data: taskList, refetch: refetchTask } = useFetchTaskList({
     lead_id: leadId!,
     options: { enabled: !!leadId },
   });
@@ -97,6 +119,30 @@ export default function LeadDetail() {
   });
 
   const { mutate: submitTask } = useSubmitTaskDetails({
+    options: {
+      onError: () => {
+        toast({
+          title: "Error",
+          description: "Something went wrong. Please try again.",
+        });
+      },
+      onSuccess: () => {
+        refetchTask();
+
+        setTaskTitle("");
+        setTaskDate("");
+        setTaskTime("");
+        setTaskDialogOpen(false);
+
+        toast({
+          title: "Task Added",
+          description: "Your task has been successfully created.",
+        });
+      },
+    },
+  });
+
+  const { mutate: submitMeeting } = useSubmitMeetingDetails({
     options: {
       onError: () => {
         toast({
@@ -159,12 +205,34 @@ export default function LeadDetail() {
     }
   };
 
+  const handleScheduleMeeting = () => {
+    const timeValue = scheduleMeetingForm.time.value;
+
+    // Split the time into hours and minutes
+    const [hours, minutes] = timeValue.split(":").map(Number);
+
+    // Determine AM/PM and convert hours to 12-hour format
+    const timeFormat = hours >= 12 ? "PM" : "AM";
+    const hours12 = hours % 12 || 12; // Convert 0 or 24 to 12 for 12-hour clock
+
+    submitMeeting({
+      date: format(new Date(scheduleMeetingForm.date.value), "yyyy-MM-dd"),
+      lead: leadDetails?.data.name || "",
+      custom_location_area: scheduleMeetingForm.location_area.value,
+      custom_purpose: scheduleMeetingForm.purpose.value,
+      time_format: timeFormat,
+      time_hrs: hours12,
+      time_mins: minutes,
+      status: "Visit Scheduled",
+    });
+  };
+
   const getVisitActionButton = (status: string) => {
     switch (status) {
-      case "scheduled":
+      case "Visit Scheduled":
         return (
           <Button
-            className="w-full mt-4"
+            className="w-full"
             onClick={() => selectedVisit && handleVisitAction(selectedVisit)}
           >
             Check In
@@ -173,7 +241,7 @@ export default function LeadDetail() {
       case "in_progress":
         return (
           <Button
-            className="w-full mt-4"
+            className="w-full"
             onClick={() => selectedVisit && handleVisitAction(selectedVisit)}
           >
             Mark as Completed
@@ -196,6 +264,45 @@ export default function LeadDetail() {
     });
   };
 
+  const handleAddTask = () => {
+    submitTask({
+      custom_type_of_activity: taskTitle,
+      date: format(new Date(taskDate), "yyyy-MM-dd"),
+      custom_due_datetime: format(
+        new Date(taskDate + " " + taskTime),
+        "yyyy-MM-dd HH:mm:ss.SSSSSS"
+      ),
+      reference_name: leadDetails?.data.name || "",
+      reference_type: "Lead",
+      description: taskTitle,
+      assigned_by: "Administrator",
+      assigned_by_full_name: "Administrator",
+    });
+  };
+
+  const handleScheduleMeetingFormChange = (
+    key: keyof typeof scheduleMeetingForm,
+    value: unknown
+  ) => {
+    if (key === "date") {
+      setScheduleMeetingForm((prevForm) => ({
+        ...prevForm,
+        [key]: {
+          error: false,
+          value: new Date((value as Dayjs).format("YYYY-MM-DD")),
+        },
+      }));
+    } else {
+      setScheduleMeetingForm((prevForm) => ({
+        ...prevForm,
+        [key]: {
+          error: false,
+          value,
+        },
+      }));
+    }
+  };
+
   if (!lead) {
     return (
       <PageContainer>
@@ -213,22 +320,6 @@ export default function LeadDetail() {
       </PageContainer>
     );
   }
-
-  const handleAddTask = () => {
-    submitTask({
-      custom_type_of_activity: taskTitle,
-      date: format(new Date(taskDate), "yyyy-MM-dd"),
-      custom_due_datetime: format(
-        new Date(taskDate + " " + taskTime),
-        "yyyy-MM-dd HH:mm:ss.SSSSSS"
-      ),
-      reference_name: leadDetails?.data.name || "",
-      reference_type: "Lead",
-      description: taskTitle,
-      assigned_by: "Administrator",
-      assigned_by_full_name: "Administrator",
-    });
-  };
 
   return (
     <PageContainer>
@@ -284,24 +375,28 @@ export default function LeadDetail() {
               <Phone className="h-3.5 w-3.5" />
               Call
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-1"
-              onClick={() => window.open(`mailto:${lead.email_id}`)}
-            >
-              <Mail className="h-3.5 w-3.5" />
-              Email
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-1"
-              onClick={() => window.open(`https://wa.me/${lead.whatsapp_no}`)}
-            >
-              <SiWhatsapp className="h-3.5 w-3.5" />
-              WhatsApp
-            </Button>
+            {!!lead.email_id && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-1"
+                onClick={() => window.open(`mailto:${lead.email_id}`)}
+              >
+                <Mail className="h-3.5 w-3.5" />
+                Email
+              </Button>
+            )}
+            {!!lead.whatsapp_no && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-1"
+                onClick={() => window.open(`https://wa.me/${lead.whatsapp_no}`)}
+              >
+                <SiWhatsapp className="h-3.5 w-3.5" />
+                WhatsApp
+              </Button>
+            )}
             <Dialog>
               <DialogTrigger asChild>
                 <Button
@@ -523,12 +618,14 @@ export default function LeadDetail() {
                   >
                     <div>
                       <p className="text-sm font-medium">
-                        {visit.project_name}
+                        {visit.custom_purpose}
                       </p>
-                      <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
-                        <MapPin className="w-3 h-3" />
-                        {visit.location}
-                      </div>
+                      {!!visit.custom_location_area && (
+                        <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
+                          <MapPin className="w-3 h-3" />
+                          {visit.custom_location_area}
+                        </div>
+                      )}
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
                         <CalendarIcon className="w-3 h-3" />
                         {format(
@@ -546,6 +643,7 @@ export default function LeadDetail() {
                           ? "default"
                           : "outline"
                       }
+                      className="rounded-sm"
                     >
                       {visit.status}
                     </Badge>
@@ -573,11 +671,13 @@ export default function LeadDetail() {
           </DialogHeader>
           <div className="pt-4 space-y-4">
             <div className="space-y-2">
-              <h3 className="font-medium">{selectedVisit?.project_name}</h3>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <MapPin className="w-4 h-4" />
-                {selectedVisit?.location}
-              </div>
+              <h3 className="font-medium">{selectedVisit?.custom_purpose}</h3>
+              {!!selectedVisit?.custom_location_area && (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <MapPin className="w-4 h-4" />
+                  {selectedVisit?.custom_location_area}
+                </div>
+              )}
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Clock className="w-4 h-4" />
                 {selectedVisit?.time_hrs}:{selectedVisit?.time_mins}{" "}
@@ -711,60 +811,63 @@ export default function LeadDetail() {
             <div className="pt-4 space-y-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium">Purpose</label>
-                <Input placeholder="Meeting purpose (e.g. Product Demo, Service Follow-up)" />
+                <Input
+                  value={scheduleMeetingForm.purpose.value}
+                  onChange={(e) =>
+                    handleScheduleMeetingFormChange("purpose", e.target.value)
+                  }
+                  placeholder="Meeting purpose (e.g. Product Demo, Service Follow-up)"
+                />
               </div>
 
               <div className="space-y-2">
                 <label className="text-sm font-medium">Date</label>
-                {/* <div className="flex justify-center">
-                  <Calendar
-                    mode="single"
-                    selected={date}
-                    onSelect={(date) => date && setDate(date)}
-                    className="border-0 rounded-lg"
-                    classNames={{
-                      months:
-                        "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
-                      month: "space-y-4 w-full",
-                      caption: "flex justify-center relative items-center h-10",
-                      caption_label: "text-base font-medium",
-                      nav: "flex items-center gap-1",
-                      nav_button:
-                        "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 absolute",
-                      nav_button_previous: "left-1",
-                      nav_button_next: "right-1",
-                      table: "w-full border-collapse",
-                      head_row: "flex w-full gap-0.5 mb-2",
-                      head_cell:
-                        "text-muted-foreground rounded-md w-9 font-normal text-sm",
-                      row: "flex w-full gap-0.5 mt-2",
-                      cell: "text-center text-sm relative p-0 hover:bg-accent hover:text-accent-foreground rounded-full w-9 h-9 [&:has([aria-selected])]:bg-transparent first:[&:has([aria-selected])]:bg-transparent last:[&:has([aria-selected])]:bg-transparent focus-within:relative focus-within:z-20",
-                      day: "h-9 w-9 p-0 font-normal text-base aria-selected:opacity-100 hover:bg-accent hover:text-accent-foreground rounded-full",
-                      day_today: "bg-accent/20 text-accent-foreground",
-                      day_outside: "opacity-50",
-                      day_disabled: "text-muted-foreground opacity-50",
-                      day_range_middle:
-                        "aria-selected:bg-accent aria-selected:text-accent-foreground",
-                      day_selected:
-                        "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground rounded-full",
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <StaticDatePicker
+                    value={dayjs(scheduleMeetingForm.date.value)}
+                    onChange={(value) =>
+                      handleScheduleMeetingFormChange("date", value)
+                    }
+                    slots={{
+                      actionBar: () => null, // Completely remove the action bar
                     }}
+                    slotProps={{
+                      toolbar: { hidden: true }, // Disable the toolbar
+                    }}
+                    defaultValue={dayjs(format(new Date(), "yyyy-MM-dd"))}
+                    minDate={dayjs(format(new Date(), "yyyy-MM-dd"))}
                   />
-                </div> */}
+                </LocalizationProvider>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Time</label>
-                  <Input type="time" />
+                  <Input
+                    value={scheduleMeetingForm.time.value}
+                    onChange={(e) =>
+                      handleScheduleMeetingFormChange("time", e.target.value)
+                    }
+                    type="time"
+                  />
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Location</label>
-                  <Input placeholder="Enter location" />
+                  <Input
+                    value={scheduleMeetingForm.location_area.value}
+                    onChange={(e) =>
+                      handleScheduleMeetingFormChange(
+                        "location_area",
+                        e.target.value
+                      )
+                    }
+                    placeholder="Enter location"
+                  />
                 </div>
               </div>
 
               {/* Location tracking button */}
-              <Button
+              {/* <Button
                 variant="outline"
                 className="w-full h-auto gap-2 py-4"
                 onClick={() => {
@@ -786,11 +889,17 @@ export default function LeadDetail() {
                     Get exact coordinates for accurate visit tracking
                   </span>
                 </div>
-              </Button>
+              </Button> */}
 
               <div className="flex justify-end gap-2 pt-2">
-                <Button variant="outline">Cancel</Button>
-                <Button>Schedule Meeting</Button>
+                <DialogClose>
+                  <Button variant="outline">Cancel</Button>
+                </DialogClose>
+                <DialogClose>
+                  <Button onClick={handleScheduleMeeting}>
+                    Schedule Meeting
+                  </Button>
+                </DialogClose>
               </div>
             </div>
           </DialogContent>

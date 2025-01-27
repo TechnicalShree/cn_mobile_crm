@@ -11,7 +11,10 @@
     "copy-html-entry": "cp ../cn_mobile_crm/public/mobile_crm/index.html ../cn_mobile_crm/www/mobile_crm.html"
   },
   "dependencies": {
-    "@mantine/dates": "^7.16.2",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/material": "^6.4.1",
+    "@mui/x-date-pickers": "^7.24.1",
     "@radix-ui/react-accordion": "^1.2.2",
     "@radix-ui/react-alert-dialog": "^1.1.5",
     "@radix-ui/react-aspect-ratio": "^1.1.1",

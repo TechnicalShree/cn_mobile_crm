@@ -9,23 +9,8 @@ import {
 import { Card } from "../../components/ui/card";
 import { useFetchLeadAnalysisStats } from "../../services/query";
 
-interface LeadDataPoint {
-  month: string;
-  leads: number;
-}
-
-interface LeadAnalysisProps {
-  data: LeadDataPoint[];
-}
-
-export default function LeadAnalysis({ data }: LeadAnalysisProps) {
+export default function LeadAnalysis() {
   const { data: starredLeads } = useFetchLeadAnalysisStats({});
-
-  console.log(
-    "nsndlnsdldjsnfdfnkndn sdflsdkm----",
-    starredLeads?.message,
-    data
-  );
 
   return (
     <Card className="p-4">

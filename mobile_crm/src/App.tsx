@@ -8,11 +8,12 @@ import Leads from "./pages/leads";
 import LeadDetail from "./pages/lead-detail";
 import Visits from "./pages/visits";
 import NotFound from "./pages/not-found";
-import "@mantine/dates/styles.css";
+import LoginPage from "./pages/login";
 
 function Router() {
   return (
     <Switch>
+      <Route path="/" component={LoginPage} />
       <Route path="/mobile_crm" component={Dashboard} />
       <Route path="/mobile_crm/leads" component={Leads} />
       <Route path="/mobile_crm/leads/:id" component={LeadDetail} />

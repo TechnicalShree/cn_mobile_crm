@@ -513,6 +513,41 @@ export interface VisitDetailsType {
   location: null;
   start_time: string;
   end_time: string;
+  custom_purpose: string;
+  custom_location_area: string;
+}
+
+export interface PostVisitDetailsType {
+  name?: string;
+  owner?: string;
+  creation?: Date;
+  modified?: Date;
+  modified_by?: string;
+  docstatus?: number;
+  idx?: number;
+  type?: string;
+  full_name?: string;
+  mobile_number?: string;
+  date: Date | string;
+  property_name?: null;
+  locality?: null;
+  lead: string;
+  project_name?: string;
+  time_format: string;
+  time_hrs: string | number;
+  time_mins: string | number;
+  is_visit_started?: number;
+  is_location?: number;
+  is_visit_done?: number;
+  status?: string;
+  assigned_to?: null;
+  assigned_to_employee_name?: null;
+  comment?: null;
+  location?: null;
+  start_time?: string;
+  end_time?: string;
+  custom_purpose: string;
+  custom_location_area: string;
 }
 
 // // Task Types

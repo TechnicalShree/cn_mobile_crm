@@ -153,3 +153,15 @@ export const postTaskDetails = <TData, TVariables>(): ((
     });
   };
 };
+
+export const postMeetingDetails = <TData, TVariables>(): ((
+  formData: TVariables
+) => Promise<TData>) => {
+  return async (formData) => {
+    return await requestWrapper<TData>({
+      url: API_END_POINTS.visitApi,
+      method: "POST",
+      data: JSON.stringify(formData),
+    });
+  };
+};

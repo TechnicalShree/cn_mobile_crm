@@ -6,7 +6,7 @@ import LeadAnalysis from "../components/dashboard/lead-analysis";
 // import StarredLeads from "../components/dashboard/starred-leads";
 import TaskList from "../components/dashboard/task-list";
 import ScheduledVisits from "../components/dashboard/scheduled-visits";
-import { dashboardStats, leadData } from "../lib/mock-data";
+import { dashboardStats } from "../lib/mock-data";
 import { Link } from "wouter";
 import { UserPlus, Users } from "lucide-react";
 import { useFetchLeadAndOpportunityStats } from "../services/query";
@@ -120,7 +120,7 @@ export default function Dashboard() {
       </div> */}
 
       {/* Lead Analysis */}
-      <LeadAnalysis data={leadData} />
+      <LeadAnalysis />
     </PageContainer>
   );
 }
