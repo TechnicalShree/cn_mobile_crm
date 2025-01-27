@@ -31,10 +31,12 @@ export default function ScheduledVisits() {
                     {visit.time_hrs}:{visit.time_mins} {visit.time_format}
                   </span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <MapPin className="w-4 h-4" />
-                  <span>{visit.locality ?? "-"}</span>
-                </div>
+                {!!visit.location_area && (
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <MapPin className="w-4 h-4" />
+                    <span>{visit.location_area ?? "-"}</span>
+                  </div>
+                )}
               </div>
               <Badge
                 variant={visit.status === "completed" ? "secondary" : "outline"}

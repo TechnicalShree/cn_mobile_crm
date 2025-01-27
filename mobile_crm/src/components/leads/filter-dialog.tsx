@@ -126,102 +126,99 @@ export default function FilterDialog({
         </div>
       </DialogTrigger>
       <DialogPortal>
-        <DialogOverlay>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <div className="flex items-center justify-between">
-                <DialogTitle>Filters</DialogTitle>
-                {Object.keys(tempFilters).length > 0 && (
-                  <Button variant="ghost" size="sm" onClick={clearFilters}>
-                    Clear all
-                  </Button>
-                )}
-              </div>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Status</label>
-                <Select
-                  value={tempFilters.status || ""}
-                  onValueChange={(value) => updateTempFilter("status", value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {statusOptions.map((status) => (
-                      <SelectItem key={status} value={status}>
-                        {status}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Territory</label>
-                <Select
-                  value={tempFilters.territory || ""}
-                  onValueChange={(value) =>
-                    updateTempFilter("territory", value)
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select territory" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="India">India</SelectItem>
-                    <SelectItem value="US">US</SelectItem>
-                    <SelectItem value="Europe">Europe</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Campaign</label>
-                <Input
-                  value={tempFilters.campaign || ""}
-                  onChange={(e) => updateTempFilter("campaign", e.target.value)}
-                  placeholder="Enter campaign"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Company</label>
-                <Input
-                  value={tempFilters.company || ""}
-                  onChange={(e) => updateTempFilter("company", e.target.value)}
-                  placeholder="Enter company name"
-                />
-              </div>
+        <DialogOverlay className="bg-[#00000056] backdrop-blur-sm" />
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <div className="flex items-center justify-between">
+              <DialogTitle>Filters</DialogTitle>
+              {Object.keys(tempFilters).length > 0 && (
+                <Button variant="ghost" size="sm" onClick={clearFilters}>
+                  Clear all
+                </Button>
+              )}
+            </div>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Status</label>
+              <Select
+                value={tempFilters.status || ""}
+                onValueChange={(value) => updateTempFilter("status", value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent>
+                  {statusOptions.map((status) => (
+                    <SelectItem key={status} value={status}>
+                      {status}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
-            {/* Apply Button */}
-            <div className="flex justify-end pt-4">
-              <DialogClose asChild>
-                <Button onClick={applyFilters}>Apply Filters</Button>
-              </DialogClose>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Territory</label>
+              <Select
+                value={tempFilters.territory || ""}
+                onValueChange={(value) => updateTempFilter("territory", value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select territory" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="India">India</SelectItem>
+                  <SelectItem value="US">US</SelectItem>
+                  <SelectItem value="Europe">Europe</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
-            {Object.keys(tempFilters).length > 0 && (
-              <div className="flex flex-wrap gap-2 pt-2">
-                {Object.entries(tempFilters).map(([key, value]) => (
-                  <Badge
-                    key={key}
-                    variant="secondary"
-                    className="gap-1 rounded-sm"
-                  >
-                    {key}: {value}
-                    <X
-                      className="w-3 h-3 cursor-pointer"
-                      onClick={() => updateTempFilter(key, "")}
-                    />
-                  </Badge>
-                ))}
-              </div>
-            )}
-          </DialogContent>
-        </DialogOverlay>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Campaign</label>
+              <Input
+                value={tempFilters.campaign || ""}
+                onChange={(e) => updateTempFilter("campaign", e.target.value)}
+                placeholder="Enter campaign"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Company</label>
+              <Input
+                value={tempFilters.company || ""}
+                onChange={(e) => updateTempFilter("company", e.target.value)}
+                placeholder="Enter company name"
+              />
+            </div>
+          </div>
+
+          {/* Apply Button */}
+          <div className="flex justify-end pt-4">
+            <DialogClose asChild>
+              <Button onClick={applyFilters}>Apply Filters</Button>
+            </DialogClose>
+          </div>
+
+          {Object.keys(tempFilters).length > 0 && (
+            <div className="flex flex-wrap gap-2 pt-2">
+              {Object.entries(tempFilters).map(([key, value]) => (
+                <Badge
+                  key={key}
+                  variant="secondary"
+                  className="gap-1 rounded-sm"
+                >
+                  {key}: {value}
+                  <X
+                    className="w-3 h-3 cursor-pointer"
+                    onClick={() => updateTempFilter(key, "")}
+                  />
+                </Badge>
+              ))}
+            </div>
+          )}
+        </DialogContent>
       </DialogPortal>
     </Dialog>
   );

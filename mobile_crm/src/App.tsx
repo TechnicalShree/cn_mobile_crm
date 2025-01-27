@@ -13,6 +13,7 @@ import LoginPage from "./pages/login";
 function Router() {
   return (
     <Switch>
+      {/* Login page for testing only */}
       <Route path="/" component={LoginPage} />
       <Route path="/mobile_crm" component={Dashboard} />
       <Route path="/mobile_crm/leads" component={Leads} />

@@ -97,6 +97,7 @@ type MeetingType = {
   location: null;
   start_time: string;
   end_time: string;
+  location_area?: string;
 };
 
 // Lead Analysis Types

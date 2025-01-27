@@ -30,6 +30,8 @@ import {
   DialogClose,
   DialogContent,
   DialogHeader,
+  DialogOverlay,
+  DialogPortal,
   DialogTitle,
   DialogTrigger,
 } from "../components/ui/dialog";
@@ -408,41 +410,44 @@ export default function LeadDetail() {
                   Edit
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-6xl w-[90vw] h-[90vh]">
-                <DialogHeader>
-                  <DialogTitle>Edit Lead</DialogTitle>
-                </DialogHeader>
-                <div className="flex-1 -mx-6 -mb-6">
-                  <iframe
-                    src={`/app/lead/${lead.name}`}
-                    className="w-full h-full rounded-b-lg"
-                    style={{ height: "calc(90vh - 4rem)" }}
-                    onLoad={(e: any) => {
-                      const iframe = e.target;
-                      const iframeDocument =
-                        iframe?.contentDocument ||
-                        iframe?.contentWindow?.document;
+              <DialogPortal>
+                <DialogOverlay className="bg-[#00000056] backdrop-blur-sm" />
+                <DialogContent className="max-w-6xl w-[90vw] h-[90vh]">
+                  <DialogHeader>
+                    <DialogTitle>Edit Lead</DialogTitle>
+                  </DialogHeader>
+                  <div className="flex-1 -mx-6 -mb-6">
+                    <iframe
+                      src={`/app/lead/${lead.name}`}
+                      className="w-full h-full rounded-b-lg"
+                      style={{ height: "calc(90vh - 4rem)" }}
+                      onLoad={(e: any) => {
+                        const iframe = e.target;
+                        const iframeDocument =
+                          iframe?.contentDocument ||
+                          iframe?.contentWindow?.document;
 
-                      // This script hides the navbar with the class 'navbar-expand'
-                      const navbar = iframeDocument.querySelector(
-                        ".navbar.navbar-expand"
-                      );
-                      if (navbar) {
-                        navbar.style.display = "none";
-                      }
+                        // This script hides the navbar with the class 'navbar-expand'
+                        const navbar = iframeDocument.querySelector(
+                          ".navbar.navbar-expand"
+                        );
+                        if (navbar) {
+                          navbar.style.display = "none";
+                        }
 
-                      // Hide the <chatnext-app> element
-                      const chatnextApp =
-                        iframeDocument.querySelector("chatnext-app");
-                      if (chatnextApp) {
-                        setTimeout(() => {
-                          chatnextApp.style.display = "none";
-                        }, 500);
-                      }
-                    }}
-                  />
-                </div>
-              </DialogContent>
+                        // Hide the <chatnext-app> element
+                        const chatnextApp =
+                          iframeDocument.querySelector("chatnext-app");
+                        if (chatnextApp) {
+                          setTimeout(() => {
+                            chatnextApp.style.display = "none";
+                          }, 500);
+                        }
+                      }}
+                    />
+                  </div>
+                </DialogContent>
+              </DialogPortal>
             </Dialog>
           </div>
         </div>
@@ -661,93 +666,99 @@ export default function LeadDetail() {
 
       {/* Visit Action Dialog */}
       <Dialog open={visitDialogOpen} onOpenChange={setVisitDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              {selectedVisit?.status === "scheduled"
-                ? "Check In to Visit"
-                : "Complete Visit"}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="pt-4 space-y-4">
-            <div className="space-y-2">
-              <h3 className="font-medium">{selectedVisit?.custom_purpose}</h3>
-              {!!selectedVisit?.custom_location_area && (
+        <DialogPortal>
+          <DialogOverlay className="bg-[#00000056] backdrop-blur-sm" />
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>
+                {selectedVisit?.status === "scheduled"
+                  ? "Check In to Visit"
+                  : "Complete Visit"}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="pt-4 space-y-4">
+              <div className="space-y-2">
+                <h3 className="font-medium">{selectedVisit?.custom_purpose}</h3>
+                {!!selectedVisit?.custom_location_area && (
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <MapPin className="w-4 h-4" />
+                    {selectedVisit?.custom_location_area}
+                  </div>
+                )}
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <MapPin className="w-4 h-4" />
-                  {selectedVisit?.custom_location_area}
+                  <Clock className="w-4 h-4" />
+                  {selectedVisit?.time_hrs}:{selectedVisit?.time_mins}{" "}
+                  {selectedVisit?.time_format}
                 </div>
-              )}
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Clock className="w-4 h-4" />
-                {selectedVisit?.time_hrs}:{selectedVisit?.time_mins}{" "}
-                {selectedVisit?.time_format}
+              </div>
+
+              <div className="p-4 rounded-lg bg-accent/50">
+                <p className="text-sm">
+                  Your current location will be recorded to complete the visit.
+                </p>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setVisitDialogOpen(false)}
+                >
+                  Cancel
+                </Button>
+                {getVisitActionButton(selectedVisit?.status || "scheduled")}
               </div>
             </div>
-
-            <div className="p-4 rounded-lg bg-accent/50">
-              <p className="text-sm">
-                Your current location will be recorded to complete the visit.
-              </p>
-            </div>
-
-            <div className="flex justify-end gap-2 pt-2">
-              <Button
-                variant="outline"
-                onClick={() => setVisitDialogOpen(false)}
-              >
-                Cancel
-              </Button>
-              {getVisitActionButton(selectedVisit?.status || "scheduled")}
-            </div>
-          </div>
-        </DialogContent>
+          </DialogContent>
+        </DialogPortal>
       </Dialog>
 
       {/* Task Dialog */}
       <Dialog open={taskDialogOpen} onOpenChange={setTaskDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Add Task</DialogTitle>
-          </DialogHeader>
-          <div className="pt-4 space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Task Title</label>
-              <Input
-                placeholder="Enter task title"
-                value={taskTitle}
-                onChange={(e) => setTaskTitle(e.target.value)}
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
+        <DialogPortal>
+          <DialogOverlay className="bg-[#00000056] backdrop-blur-sm" />
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add Task</DialogTitle>
+            </DialogHeader>
+            <div className="pt-4 space-y-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium">Date</label>
+                <label className="text-sm font-medium">Task Title</label>
                 <Input
-                  type="date"
-                  value={taskDate}
-                  onChange={(e) => setTaskDate(e.target.value)}
+                  placeholder="Enter task title"
+                  value={taskTitle}
+                  onChange={(e) => setTaskTitle(e.target.value)}
                 />
               </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Time</label>
-                <Input
-                  type="time"
-                  value={taskTime}
-                  onChange={(e) => setTaskTime(e.target.value)}
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Date</label>
+                  <Input
+                    type="date"
+                    value={taskDate}
+                    onChange={(e) => setTaskDate(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Time</label>
+                  <Input
+                    type="time"
+                    value={taskTime}
+                    onChange={(e) => setTaskTime(e.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end gap-2 pt-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setTaskDialogOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button onClick={handleAddTask}>Add Task</Button>
               </div>
             </div>
-            <div className="flex justify-end gap-2 pt-2">
-              <Button
-                variant="outline"
-                onClick={() => setTaskDialogOpen(false)}
-              >
-                Cancel
-              </Button>
-              <Button onClick={handleAddTask}>Add Task</Button>
-            </div>
-          </div>
-        </DialogContent>
+          </DialogContent>
+        </DialogPortal>
       </Dialog>
 
       {/* Floating Action Buttons */}
@@ -773,24 +784,27 @@ export default function LeadDetail() {
               Note
             </Button>
           </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add Note</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <Textarea
-                placeholder="Type your note..."
-                className="min-h-[100px]"
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-              />
-              <div className="flex justify-end">
-                <DialogClose>
-                  <Button onClick={haandleAddNote}>Add Note</Button>
-                </DialogClose>
+          <DialogPortal>
+            <DialogOverlay className="bg-[#00000056] backdrop-blur-sm" />
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Add Note</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <Textarea
+                  placeholder="Type your note..."
+                  className="min-h-[100px]"
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                />
+                <div className="flex justify-end">
+                  <DialogClose>
+                    <Button onClick={haandleAddNote}>Add Note</Button>
+                  </DialogClose>
+                </div>
               </div>
-            </div>
-          </DialogContent>
+            </DialogContent>
+          </DialogPortal>
         </Dialog>
 
         <Dialog>
@@ -804,70 +818,72 @@ export default function LeadDetail() {
               Meeting
             </Button>
           </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Schedule Meeting</DialogTitle>
-            </DialogHeader>
-            <div className="pt-4 space-y-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Purpose</label>
-                <Input
-                  value={scheduleMeetingForm.purpose.value}
-                  onChange={(e) =>
-                    handleScheduleMeetingFormChange("purpose", e.target.value)
-                  }
-                  placeholder="Meeting purpose (e.g. Product Demo, Service Follow-up)"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Date</label>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <StaticDatePicker
-                    value={dayjs(scheduleMeetingForm.date.value)}
-                    onChange={(value) =>
-                      handleScheduleMeetingFormChange("date", value)
-                    }
-                    slots={{
-                      actionBar: () => null, // Completely remove the action bar
-                    }}
-                    slotProps={{
-                      toolbar: { hidden: true }, // Disable the toolbar
-                    }}
-                    defaultValue={dayjs(format(new Date(), "yyyy-MM-dd"))}
-                    minDate={dayjs(format(new Date(), "yyyy-MM-dd"))}
-                  />
-                </LocalizationProvider>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
+          <DialogPortal>
+            <DialogOverlay className="bg-[#00000056] backdrop-blur-sm" />
+            <DialogContent>
+              <DialogHeader className="z-50">
+                <DialogTitle>Schedule Meeting</DialogTitle>
+              </DialogHeader>
+              <div className="z-50 pt-4 space-y-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Time</label>
+                  <label className="text-sm font-medium">Purpose</label>
                   <Input
-                    value={scheduleMeetingForm.time.value}
+                    value={scheduleMeetingForm.purpose.value}
                     onChange={(e) =>
-                      handleScheduleMeetingFormChange("time", e.target.value)
+                      handleScheduleMeetingFormChange("purpose", e.target.value)
                     }
-                    type="time"
+                    placeholder="Meeting purpose (e.g. Product Demo, Service Follow-up)"
                   />
                 </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Location</label>
-                  <Input
-                    value={scheduleMeetingForm.location_area.value}
-                    onChange={(e) =>
-                      handleScheduleMeetingFormChange(
-                        "location_area",
-                        e.target.value
-                      )
-                    }
-                    placeholder="Enter location"
-                  />
-                </div>
-              </div>
 
-              {/* Location tracking button */}
-              {/* <Button
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Date</label>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <StaticDatePicker
+                      value={dayjs(scheduleMeetingForm.date.value)}
+                      onChange={(value) =>
+                        handleScheduleMeetingFormChange("date", value)
+                      }
+                      slots={{
+                        actionBar: () => null, // Completely remove the action bar
+                      }}
+                      slotProps={{
+                        toolbar: { hidden: true }, // Disable the toolbar
+                      }}
+                      defaultValue={dayjs(format(new Date(), "yyyy-MM-dd"))}
+                      minDate={dayjs(format(new Date(), "yyyy-MM-dd"))}
+                    />
+                  </LocalizationProvider>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Time</label>
+                    <Input
+                      value={scheduleMeetingForm.time.value}
+                      onChange={(e) =>
+                        handleScheduleMeetingFormChange("time", e.target.value)
+                      }
+                      type="time"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Location</label>
+                    <Input
+                      value={scheduleMeetingForm.location_area.value}
+                      onChange={(e) =>
+                        handleScheduleMeetingFormChange(
+                          "location_area",
+                          e.target.value
+                        )
+                      }
+                      placeholder="Enter location"
+                    />
+                  </div>
+                </div>
+
+                {/* Location tracking button */}
+                {/* <Button
                 variant="outline"
                 className="w-full h-auto gap-2 py-4"
                 onClick={() => {
@@ -891,18 +907,19 @@ export default function LeadDetail() {
                 </div>
               </Button> */}
 
-              <div className="flex justify-end gap-2 pt-2">
-                <DialogClose>
-                  <Button variant="outline">Cancel</Button>
-                </DialogClose>
-                <DialogClose>
-                  <Button onClick={handleScheduleMeeting}>
-                    Schedule Meeting
-                  </Button>
-                </DialogClose>
+                <div className="flex justify-end gap-2 pt-2">
+                  <DialogClose>
+                    <Button variant="outline">Cancel</Button>
+                  </DialogClose>
+                  <DialogClose>
+                    <Button onClick={handleScheduleMeeting}>
+                      Schedule Meeting
+                    </Button>
+                  </DialogClose>
+                </div>
               </div>
-            </div>
-          </DialogContent>
+            </DialogContent>
+          </DialogPortal>
         </Dialog>
       </div>
     </PageContainer>
