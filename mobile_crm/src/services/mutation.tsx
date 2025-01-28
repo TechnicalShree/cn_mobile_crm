@@ -1,6 +1,7 @@
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import {
+  postCreateLead,
   postMeetingDetails,
   postNoteDetails,
   postTaskDetails,
@@ -8,6 +9,7 @@ import {
   putTaskDetails,
 } from "./services";
 import {
+  PostLeadType,
   PostMarkTaskCloseType,
   PostNoteType,
   PostToDoType,
@@ -81,6 +83,18 @@ export const useUpdateTaskDetails = <TError = AxiosError, TContext = unknown>({
   return useMutation<unknown, TError, PostMarkTaskCloseType, TContext>(
     ["updateTaskForm"],
     putTaskDetails<unknown, PostMarkTaskCloseType>(),
+    options
+  );
+};
+
+export const useCreateLead = <TError = AxiosError, TContext = unknown>({
+  options,
+}: {
+  options?: UseMutationOptions<unknown, TError, PostLeadType, TContext>;
+}) => {
+  return useMutation<unknown, TError, PostLeadType, TContext>(
+    ["postCreateLead"],
+    postCreateLead<unknown, PostLeadType>(),
     options
   );
 };

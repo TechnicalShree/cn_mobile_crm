@@ -22,7 +22,7 @@ export const getPendingTaskList =
   <TData,>(): (() => Promise<TData>) =>
   () =>
     requestWrapper<TData>({
-      url: API_END_POINTS.getPendingTaskList,
+      url: API_END_POINTS.todoApi,
       method: "GET",
       params: {
         fields: JSON.stringify(["*"]),
@@ -39,7 +39,7 @@ export const getMeetingList =
   <TData,>(): (() => Promise<TData>) =>
   () =>
     requestWrapper<TData>({
-      url: API_END_POINTS.getMeetingList,
+      url: API_END_POINTS.visitApi,
       method: "GET",
       params: {
         fields: JSON.stringify(["*"]),
@@ -65,7 +65,7 @@ export const getLeadList =
   }): (() => Promise<TData>) =>
   () =>
     requestWrapper<TData>({
-      url: API_END_POINTS.getLeadList,
+      url: API_END_POINTS.leadApi,
       method: "GET",
       params: {
         fields: JSON.stringify(["*"]),
@@ -80,7 +80,7 @@ export const getLeadDetails =
   <TData,>({ lead_id }: { lead_id: string }): (() => Promise<TData>) =>
   () =>
     requestWrapper<TData>({
-      url: `${API_END_POINTS.getLeadDetails}/${lead_id}`,
+      url: `${API_END_POINTS.leadApi}/${lead_id}`,
       method: "GET",
     });
 
@@ -89,7 +89,7 @@ export const getVisitList =
   <TData,>({ lead_id }: { lead_id: string }): (() => Promise<TData>) =>
   () =>
     requestWrapper<TData>({
-      url: API_END_POINTS.getVisitList,
+      url: API_END_POINTS.visitApi,
       method: "GET",
       params: {
         fields: JSON.stringify(["*"]),
@@ -135,7 +135,7 @@ export const postNoteDetails = <TData, TVariables>(): ((
 ) => Promise<TData>) => {
   return async (formData) => {
     return await requestWrapper<TData>({
-      url: API_END_POINTS.crmNote,
+      url: API_END_POINTS.crmNoteApi,
       method: "POST",
       data: JSON.stringify(formData),
     });
@@ -182,8 +182,18 @@ export const putTaskDetails = <TData, TVariables>(): ((
   formData: TVariables
 ) => Promise<TData>) => {
   return async (formData) => {
-    console.log("sjndfjnsd ----- ", formData);
+    return await requestWrapper<TData>({
+      url: API_END_POINTS.updateTask,
+      method: "POST",
+      data: JSON.stringify({ visit: formData }),
+    });
+  };
+};
 
+export const postCreateLead = <TData, TVariables>(): ((
+  formData: TVariables
+) => Promise<TData>) => {
+  return async (formData) => {
     return await requestWrapper<TData>({
       url: API_END_POINTS.updateTask,
       method: "POST",

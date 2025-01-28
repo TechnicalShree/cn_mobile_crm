@@ -10,9 +10,12 @@ import { dashboardStats } from "../lib/mock-data";
 import { Link } from "wouter";
 import { UserPlus, Users } from "lucide-react";
 import { useFetchLeadAndOpportunityStats } from "../services/query";
+import { LeadForm } from "../components/modals/create-lead";
+import { useState } from "react";
 
 export default function Dashboard() {
   const { data: dashboardLeadStats } = useFetchLeadAndOpportunityStats({});
+  const [isNewLeadModalOpen, setIsNewLeadModalOpen] = useState(false);
 
   const shortcuts = [
     {
@@ -78,11 +81,13 @@ export default function Dashboard() {
               <Users className="w-4 h-4" />
             </Button>
           </Link>
-          <Link href="/mobile_crm/leads?new=true">
-            <Button size="icon" className="w-8 h-8">
-              <UserPlus className="w-4 h-4" />
-            </Button>
-          </Link>
+          <Button
+            size="icon"
+            className="w-8 h-8"
+            onClick={() => setIsNewLeadModalOpen(true)}
+          >
+            <UserPlus className="w-4 h-4" />
+          </Button>
         </div>
       </div>
 
@@ -121,6 +126,11 @@ export default function Dashboard() {
 
       {/* Lead Analysis */}
       <LeadAnalysis />
+
+      <LeadForm
+        isOpen={isNewLeadModalOpen}
+        onClose={() => setIsNewLeadModalOpen(false)}
+      />
     </PageContainer>
   );
 }

@@ -584,3 +584,10 @@ export interface PostVisitDetailsType {
 export type PostMarkTaskCloseType = {
   task_id: string;
 };
+
+export interface PostLeadType {
+  first_name: string;
+  mobile_no: string;
+  email_id: string;
+  custom_budget_range: string;
+}

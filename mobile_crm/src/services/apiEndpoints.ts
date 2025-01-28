@@ -8,17 +8,10 @@ const API_END_POINTS = {
   updateTask: "/api/method/cn_mobile_crm.api.lead_details.mark_todo_closed",
 
   // Standard Methods
-  getPendingTaskList: "/api/resource/ToDo",
-  getMeetingList: "/api/resource/Daily Visit Schedule",
-
-  getLeadList: "/api/resource/Lead",
-  // Keep duplicate Just in case you need to replace it with a custom method
-  getLeadDetails: "/api/resource/Lead",
-  getVisitList: "/api/resource/Daily Visit Schedule",
-  visitApi: "/api/resource/Daily Visit Schedule",
   todoApi: "/api/resource/ToDo",
-  getTaskList: "/api/resource/ToDo",
-  crmNote: "/api/resource/CRM Note",
+  leadApi: "/api/resource/Lead",
+  crmNoteApi: "/api/resource/CRM Note",
+  visitApi: "/api/resource/Daily Visit Schedule",
 };
 
 export default API_END_POINTS;
