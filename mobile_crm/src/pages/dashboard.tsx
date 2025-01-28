@@ -1,4 +1,3 @@
-import { Avatar } from "../components/ui/avatar";
 import { Button } from "../components/ui/button";
 import PageContainer from "../components/layout/page-container";
 import BusinessSummary from "../components/dashboard/business-summary";
