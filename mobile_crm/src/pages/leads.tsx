@@ -9,16 +9,8 @@ import LeadCard from "../components/leads/lead-card";
 import FilterDialog from "../components/leads/filter-dialog";
 import { useFetchLeadList } from "../services/query";
 import { EmptyState } from "../components/leads/empty-record";
-
-export const TabName = {
-  ALL: "All",
-  LEAD: "Lead",
-  OPEN: "Open",
-  HOT: "Hot",
-  QUOTATION: "Quotation",
-  OPPORTUNITY: "Opportunity",
-  UNRESPONDED: "Unresponded",
-};
+import { TabName } from "../utils/constants";
+import { LeadForm } from "../components/modals/create-lead";
 
 const tabs = [
   {
@@ -41,6 +33,14 @@ const tabs = [
     label: "Open",
     value: TabName.OPEN,
   },
+  {
+    label: "Hot",
+    value: TabName.HOT,
+  },
+  {
+    label: "Unresponded",
+    value: TabName.UNRESPONDED,
+  },
 ];
 
 export default function Leads() {
@@ -48,42 +48,38 @@ export default function Leads() {
   const [searchParams, setSearchParams] = useSearchParams();
   const status = searchParams.get("status") || TabName.ALL;
   const [filters, setFilters] = useState<Record<string, string>>({});
+  const [isNewLeadModalOpen, setIsNewLeadModalOpen] = useState(false);
 
-  const leadOrFilters = useMemo(() => {
-    const orFilters = [];
+  const leadFilters = useMemo(() => {
+    const filtersList = [];
     switch (status) {
       case TabName.ALL:
-        orFilters.push([
-          "lead_status",
-          "in",
-          ["Lead", "Opportunity", "Quotation", "Open"],
-        ]);
         break;
       case TabName.LEAD:
-        orFilters.push(["lead_status", "=", "Lead"]);
+        filtersList.push(["lead_status", "=", "Lead"]);
         break;
       case TabName.OPPORTUNITY:
-        orFilters.push(["lead_status", "=", "Opportunity"]);
+        filtersList.push(["lead_status", "=", "Opportunity"]);
         break;
       case TabName.QUOTATION:
-        orFilters.push(["lead_status", "=", "Quotation"]);
+        filtersList.push(["lead_status", "=", "Quotation"]);
         break;
       case TabName.OPEN:
-        orFilters.push(["lead_status", "=", "Open"]);
+        filtersList.push(["lead_status", "=", "Open"]);
         break;
       case TabName.HOT:
-        orFilters.push(["lead_status", "=", "Hot"]);
+        filtersList.push(["lead_status", "=", "Hot"]);
         break;
       case TabName.UNRESPONDED:
-        orFilters.push(["lead_status", "=", "Unresponded"]);
+        filtersList.push(["lead_status", "=", "Unresponded"]);
         break;
     }
 
-    return orFilters;
+    return filtersList;
   }, [status]);
 
-  const leadFilters = useMemo(() => {
-    const filtersList: string[][] = [];
+  const leadOrFilters = useMemo(() => {
+    const orFiltersList: string[][] = [];
 
     const addFilter = (
       field: string,
@@ -91,7 +87,7 @@ export default function Leads() {
       value: string | undefined
     ) => {
       if (value) {
-        filtersList.push([field, operator, value]);
+        orFiltersList.push([field, operator, value]);
       }
     };
 
@@ -115,7 +111,7 @@ export default function Leads() {
       });
     }
 
-    return filtersList;
+    return orFiltersList;
   }, [searchQuery, filters]);
 
   const { data: leadList } = useFetchLeadList({
@@ -133,7 +129,11 @@ export default function Leads() {
             Back
           </Button>
         </Link>
-        <Button size="icon" className="w-8 h-8">
+        <Button
+          size="icon"
+          className="w-8 h-8"
+          onClick={() => setIsNewLeadModalOpen(true)}
+        >
           <UserPlus className="w-4 h-4" />
         </Button>
       </div>
@@ -185,6 +185,10 @@ export default function Leads() {
             <LeadCard key={lead.name} lead={lead} />
           ))}
       </div>
+      <LeadForm
+        isOpen={isNewLeadModalOpen}
+        onClose={() => setIsNewLeadModalOpen(false)}
+      />
     </PageContainer>
   );
 }

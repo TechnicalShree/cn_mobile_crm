@@ -24,7 +24,7 @@ export default function Dashboard() {
     },
     {
       label: "Unresponded Leads",
-      href: "/mobile_crm/leads?status=unresponded",
+      href: "/mobile_crm/leads?status=Unresponded",
       count: dashboardLeadStats?.message.unresponded_lead_count ?? 0,
     },
     {

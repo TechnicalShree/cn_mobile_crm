@@ -81,8 +81,6 @@ export function LeadForm({ isOpen, onClose }: LeadModalProps) {
         email_id: data.customerEmail,
         custom_budget_range: data.budgetRange,
       });
-      console.log(data);
-      // Add your form submission logic here
     } catch (error) {
       console.error(error);
     } finally {

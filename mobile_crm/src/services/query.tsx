@@ -142,8 +142,8 @@ export const useFetchLeadList = <TData = LeadListType, TError = AxiosError>({
   options,
   or_filters,
 }: {
-  filters: any[];
-  or_filters?: any[];
+  filters: unknown[];
+  or_filters?: unknown[];
   options?: UseQueryOptions<LeadListType, TError, TData>;
   limit_page_length?: number;
 }) =>

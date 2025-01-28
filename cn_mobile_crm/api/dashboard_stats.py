@@ -3,7 +3,7 @@ from frappe.utils import getdate, today
 from collections import defaultdict
 
 OPEN_LEAD_FILTERS = ["Open"]
-UNRESPONDED_LEAD_FILTERS = ["Unresponsive"]
+UNRESPONDED_LEAD_FILTERS = ["Unresponded"]
 HOT_LEAD_FILTERS = ["Hot"]
 # HOT_LEAD_FILTERS = ["Interested", "Replied"]
 OPPORTUNITY_LEAD_FILTERS = ["Opportunity"]

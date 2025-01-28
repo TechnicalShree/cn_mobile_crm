@@ -221,6 +221,7 @@ export default function LeadDetail() {
         payload.end_time = format(new Date(), "HH:mm:ss");
       }
       updateMeeting(payload);
+      setVisitDialogOpen(false);
     }
   };
 
@@ -435,15 +436,15 @@ export default function LeadDetail() {
               </DialogTrigger>
               <DialogPortal>
                 <DialogOverlay className="bg-[#00000056] backdrop-blur-sm" />
-                <DialogContent className="max-w-6xl w-[90vw] h-[90vh]">
-                  <DialogHeader>
+                <DialogContent className="max-w-6xl w-[100vw] h-[100vh]">
+                  {/* <DialogHeader>
                     <DialogTitle>Edit Lead</DialogTitle>
-                  </DialogHeader>
+                  </DialogHeader> */}
                   <div className="flex-1 -mx-6 -mb-6">
                     <iframe
                       src={`/app/lead/${lead.name}`}
                       className="w-full h-full rounded-b-lg"
-                      style={{ height: "calc(90vh - 4rem)" }}
+                      style={{ height: "calc(100vh - 2rem)" }}
                       onLoad={(e: any) => {
                         const iframe = e.target;
                         const iframeDocument =
