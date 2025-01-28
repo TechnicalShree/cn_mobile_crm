@@ -62,7 +62,7 @@ export default function Dashboard() {
       {/* Header with User Profile */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
-          <Avatar className="w-10 h-10" />
+          {/* <Avatar className="w-10 h-10" /> */}
           <div>
             <h1 className="text-xl font-bold">{dashboardStats.user.name}</h1>
             <div className="flex items-center gap-2 text-sm text-gray-500">

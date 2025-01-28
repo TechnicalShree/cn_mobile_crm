@@ -37,7 +37,9 @@ export default function LeadCard({ lead }: { lead: LeadType }) {
 
         {/* Lead Info */}
         <div className="space-y-1">
-          <h3 className="text-sm font-medium">{lead.name}</h3>
+          <h3 className="text-sm font-medium">
+            {lead.first_name} {lead?.last_name || ""}
+          </h3>
           <div className="text-sm text-muted-foreground">
             {lead.company_name}
             {lead.territory && (

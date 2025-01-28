@@ -44,16 +44,22 @@ import {
 } from "../services/query";
 import { format } from "date-fns";
 import { cn } from "../lib/utils";
-import { VisitDetailsType } from "../types/types";
+import {
+  PostVisitDetailsType,
+  ToDoType,
+  VisitDetailsType,
+} from "../types/types";
 import {
   useSubmitMeetingDetails,
   useSubmitNoteDetails,
   useSubmitTaskDetails,
+  useUpdateMeetingDetails,
 } from "../services/mutation";
 import dayjs, { Dayjs } from "dayjs";
 import { StaticDatePicker } from "@mui/x-date-pickers/StaticDatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { TaskModal } from "../components/modals/task-details";
 
 export default function LeadDetail() {
   const [location] = useLocation();
@@ -62,6 +68,8 @@ export default function LeadDetail() {
   const [selectedVisit, setSelectedVisit] = useState<VisitDetailsType | null>(
     null
   );
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<ToDoType | null>(null);
   const [visitDialogOpen, setVisitDialogOpen] = useState(false);
   const [taskDialogOpen, setTaskDialogOpen] = useState(false);
   const [taskTitle, setTaskTitle] = useState("");
@@ -168,42 +176,51 @@ export default function LeadDetail() {
     },
   });
 
+  const { mutate: updateMeeting } = useUpdateMeetingDetails({
+    options: {
+      onError: () => {
+        toast({
+          title: "Error",
+          description: "Something went wrong. Please try again.",
+        });
+      },
+      onSuccess: () => {
+        refetchVisit();
+
+        setTaskTitle("");
+        setTaskDate("");
+        setTaskTime("");
+        setTaskDialogOpen(false);
+
+        toast({
+          title: "Task Added",
+          description: "Your task has been successfully created.",
+        });
+      },
+    },
+  });
+
   const lead = leadDetails?.data;
 
   // Visit status management functions
-  const handleVisitAction = (visit: VisitDetailsType) => {
+  const handleVisitAction = (
+    visit: VisitDetailsType,
+    action: "check_in" | "completed"
+  ) => {
     if (navigator.geolocation) {
-      // navigator.geolocation.getCurrentPosition(
-      //   (position) => {
-      //     const { latitude, longitude } = position.coords;
-      //     // Here we would typically send this to the backend
-      //     console.log(`Location captured: ${latitude}, ${longitude}`);
-      //     if (visit.status === "scheduled") {
-      //       toast({
-      //         title: "Visit Started",
-      //         description:
-      //           "Your location has been recorded for the visit check-in.",
-      //       });
-      //       // Update visit status to in_progress
-      //     } else if (visit.status === "in_progress") {
-      //       toast({
-      //         title: "Visit Completed",
-      //         description: "Visit has been marked as completed.",
-      //       });
-      //       // Update visit status to completed
-      //     }
-      //     setVisitDialogOpen(false);
-      //   },
-      //   (error) => {
-      //     toast({
-      //       title: "Location Error",
-      //       description:
-      //         "Unable to get your location. Please enable location services.",
-      //       variant: "destructive",
-      //     });
-      //     console.error(error);
-      //   }
-      // );
+      const payload: PostVisitDetailsType = {
+        name: visit.name,
+        status: action === "check_in" ? "Visit Started" : "Visit Done",
+      };
+
+      if (action === "check_in") {
+        payload.is_visit_started = 1;
+        payload.start_time = format(new Date(), "HH:mm:ss");
+      } else if (action === "completed") {
+        payload.is_visit_done = 1;
+        payload.end_time = format(new Date(), "HH:mm:ss");
+      }
+      updateMeeting(payload);
     }
   };
 
@@ -235,16 +252,20 @@ export default function LeadDetail() {
         return (
           <Button
             className="w-full"
-            onClick={() => selectedVisit && handleVisitAction(selectedVisit)}
+            onClick={() =>
+              selectedVisit && handleVisitAction(selectedVisit, "check_in")
+            }
           >
             Check In
           </Button>
         );
-      case "in_progress":
+      case "Visit Started":
         return (
           <Button
             className="w-full"
-            onClick={() => selectedVisit && handleVisitAction(selectedVisit)}
+            onClick={() =>
+              selectedVisit && handleVisitAction(selectedVisit, "completed")
+            }
           >
             Mark as Completed
           </Button>
@@ -362,12 +383,14 @@ export default function LeadDetail() {
 
           {/* Name and Company */}
           <div>
-            <h1 className="text-xl font-bold">{lead.name}</h1>
+            <h1 className="text-xl font-bold">
+              {lead.first_name} {lead?.last_name || ""}
+            </h1>
             <p className="text-muted-foreground">{lead.company_name}</p>
           </div>
 
           {/* Contact Actions */}
-          <div className="flex gap-2">
+          <div className="flex gap-2 overflow-x-auto">
             <Button
               variant="outline"
               size="sm"
@@ -455,7 +478,7 @@ export default function LeadDetail() {
 
       {/* Tabbed Content */}
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="justify-start w-full px-1 border-b rounded-md">
+        <TabsList className="justify-start w-full px-1 overflow-x-auto border-b rounded-md">
           <TabsTrigger value="overview" className="gap-2">
             <FileText className="w-4 h-4" />
             Overview
@@ -541,7 +564,11 @@ export default function LeadDetail() {
                 taskList.data.map((task) => (
                   <div
                     key={task.name}
-                    className="flex items-center justify-between pb-2 border-b last:border-0"
+                    className="flex items-center justify-between pb-2 border-b cursor-pointer last:border-0"
+                    onClick={() => {
+                      setIsTaskModalOpen(true);
+                      setSelectedTask(task);
+                    }}
                   >
                     <div>
                       {(!!task.custom_type_of_activity && (
@@ -921,6 +948,22 @@ export default function LeadDetail() {
             </DialogContent>
           </DialogPortal>
         </Dialog>
+
+        <TaskModal
+          isOpen={isTaskModalOpen}
+          onClose={() => setIsTaskModalOpen(false)}
+          task={{
+            title: selectedTask?.custom_type_of_activity || "",
+            dueDate: !!selectedTask?.date
+              ? `Due: ${format(
+                  new Date(selectedTask?.date || ""),
+                  "dd MMM, yyyy"
+                )}`
+              : "",
+            status: selectedTask?.status || "",
+            description: selectedTask?.description || "",
+          }}
+        />
       </div>
     </PageContainer>
   );

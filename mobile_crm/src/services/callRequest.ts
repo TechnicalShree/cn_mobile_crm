@@ -8,7 +8,7 @@ declare global {
 
 type RequestWrapperType = {
   url: string;
-  method?: "GET" | "POST" | "PUT" | "DELETE";
+  method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   data?: any;
   params?: any;
   headers?: AxiosRequestHeaders;

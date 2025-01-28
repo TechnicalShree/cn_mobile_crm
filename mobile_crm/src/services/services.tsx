@@ -165,3 +165,29 @@ export const postMeetingDetails = <TData, TVariables>(): ((
     });
   };
 };
+
+export const putMeetingDetails = <TData, TVariables>(): ((
+  formData: TVariables
+) => Promise<TData>) => {
+  return async (formData) => {
+    return await requestWrapper<TData>({
+      url: API_END_POINTS.updateVisit,
+      method: "POST",
+      data: JSON.stringify({ visit: formData }),
+    });
+  };
+};
+
+export const putTaskDetails = <TData, TVariables>(): ((
+  formData: TVariables
+) => Promise<TData>) => {
+  return async (formData) => {
+    console.log("sjndfjnsd ----- ", formData);
+
+    return await requestWrapper<TData>({
+      url: API_END_POINTS.updateTask,
+      method: "POST",
+      data: JSON.stringify({ visit: formData }),
+    });
+  };
+};

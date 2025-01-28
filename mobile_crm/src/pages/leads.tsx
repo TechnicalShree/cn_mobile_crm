@@ -166,7 +166,7 @@ export default function Leads() {
           onValueChange={(value) => setSearchParams({ status: value })}
           className="w-full"
         >
-          <TabsList className="justify-start w-full">
+          <TabsList className="justify-start w-full overflow-x-auto">
             {tabs.map((tab) => (
               <TabsTrigger key={tab.value} value={tab.value}>
                 {tab.label}
