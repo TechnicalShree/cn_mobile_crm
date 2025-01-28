@@ -59,8 +59,8 @@ export const getLeadList =
     or_filters,
     limit_page_length = 10,
   }: {
-    filters: any[];
-    or_filters?: any[];
+    filters: unknown[];
+    or_filters?: unknown[];
     limit_page_length?: number;
   }): (() => Promise<TData>) =>
   () =>
@@ -195,9 +195,9 @@ export const postCreateLead = <TData, TVariables>(): ((
 ) => Promise<TData>) => {
   return async (formData) => {
     return await requestWrapper<TData>({
-      url: API_END_POINTS.updateTask,
+      url: API_END_POINTS.leadApi,
       method: "POST",
-      data: JSON.stringify({ visit: formData }),
+      data: JSON.stringify(formData),
     });
   };
 };
