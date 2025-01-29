@@ -10,11 +10,14 @@ import {
 import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
 import { Separator } from "../../components/ui/separator";
+import { useUpdateTaskDetails } from "../../services/mutation";
+import { toast } from "../../hooks/use-toast";
 
 interface TaskModalProps {
   isOpen: boolean;
   onClose: () => void;
   task: {
+    name: string;
     title: string;
     dueDate: string;
     status: string;
@@ -23,6 +26,31 @@ interface TaskModalProps {
 }
 
 export function TaskModal({ isOpen, onClose, task }: TaskModalProps) {
+  const { mutate: updateTask, isLoading: isTaskUpdating } =
+    useUpdateTaskDetails({
+      options: {
+        onError: () => {
+          toast({
+            title: "Error",
+            description: "Something went wrong. Please try again.",
+          });
+        },
+        onSuccess: () => {
+          toast({
+            title: "Task Updated",
+            description: "Your task has been successfully updated.",
+          });
+          onClose();
+        },
+      },
+    });
+
+  function onSubmit() {
+    updateTask({
+      todo_id: task.name,
+    });
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogPortal>
@@ -70,10 +98,19 @@ export function TaskModal({ isOpen, onClose, task }: TaskModalProps) {
               </>
             )}
 
-            <div className="flex justify-end pt-4">
+            <div className="flex justify-end pt-4 gap-2">
               <Button variant="outline" onClick={onClose}>
                 Close
               </Button>
+              {task.status === "Open" && (
+                <Button
+                  disabled={isTaskUpdating}
+                  variant="default"
+                  onClick={onSubmit}
+                >
+                  Mark as Completed
+                </Button>
+              )}
             </div>
           </div>
         </DialogContent>

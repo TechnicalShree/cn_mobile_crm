@@ -1,6 +1,7 @@
 import { format } from "date-fns";
 import API_END_POINTS from "./apiEndpoints";
 import requestWrapper from "./callRequest";
+import { PostNoteType } from "../types/types";
 
 export const getLeadAndOpportunityStats =
   <TData,>(): (() => Promise<TData>) =>
@@ -178,14 +179,18 @@ export const putMeetingDetails = <TData, TVariables>(): ((
   };
 };
 
-export const putTaskDetails = <TData, TVariables>(): ((
-  formData: TVariables
+interface TaskPayload {
+  todo_id: string;
+}
+
+export const putTaskDetails = <TData, TVariables extends TaskPayload>(): ((
+  payload: TVariables
 ) => Promise<TData>) => {
-  return async (formData) => {
+  return async (payload) => {
     return await requestWrapper<TData>({
-      url: API_END_POINTS.updateTask,
+      url: `${API_END_POINTS.updateTask}?todo_id=${payload.todo_id}`,
       method: "POST",
-      data: JSON.stringify({ visit: formData }),
+      // data: JSON.stringify(payload),
     });
   };
 };
@@ -197,6 +202,18 @@ export const postCreateLead = <TData, TVariables>(): ((
     return await requestWrapper<TData>({
       url: API_END_POINTS.leadApi,
       method: "POST",
+      data: JSON.stringify(formData),
+    });
+  };
+};
+
+export const postUpdateNote = <TData, TVariables extends PostNoteType>(): ((
+  formData: TVariables
+) => Promise<TData>) => {
+  return async (formData) => {
+    return await requestWrapper<TData>({
+      url: `${API_END_POINTS.crmNoteApi}/${formData.name}`,
+      method: "PUT",
       data: JSON.stringify(formData),
     });
   };

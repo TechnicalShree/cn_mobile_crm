@@ -1,8 +1,12 @@
+import { Link } from "wouter";
 import { useLocation } from "wouter";
+import { SiWhatsapp } from "react-icons/si";
 import { Card } from "../components/ui/card";
-import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
 import { Input } from "../components/ui/input";
+import { Button } from "../components/ui/button";
+import { Textarea } from "../components/ui/textarea";
+import PageContainer from "../components/layout/page-container";
 import {
   Tabs,
   TabsContent,
@@ -21,10 +25,6 @@ import {
   Clock,
   CalendarIcon,
 } from "lucide-react";
-import { SiWhatsapp } from "react-icons/si";
-import PageContainer from "../components/layout/page-container";
-import { Link } from "wouter";
-import { Textarea } from "../components/ui/textarea";
 import {
   Dialog,
   DialogClose,
@@ -35,31 +35,33 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../components/ui/dialog";
-import { useState } from "react";
-import { useToast } from "../hooks/use-toast";
 import {
   useFetchLeadDetails,
   useFetchTaskList,
   useFetchVisitList,
 } from "../services/query";
-import { format } from "date-fns";
-import { cn } from "../lib/utils";
 import {
-  PostVisitDetailsType,
+  Note,
   ToDoType,
   VisitDetailsType,
+  PostVisitDetailsType,
 } from "../types/types";
 import {
-  useSubmitMeetingDetails,
   useSubmitNoteDetails,
   useSubmitTaskDetails,
   useUpdateMeetingDetails,
+  useSubmitMeetingDetails,
 } from "../services/mutation";
+import { useState } from "react";
+import { cn } from "../lib/utils";
+import { format } from "date-fns";
 import dayjs, { Dayjs } from "dayjs";
+import { useToast } from "../hooks/use-toast";
+import { NoteCard } from "../components/modals/note-details";
+import { TaskModal } from "../components/modals/task-details";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { StaticDatePicker } from "@mui/x-date-pickers/StaticDatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { TaskModal } from "../components/modals/task-details";
 
 export default function LeadDetail() {
   const [location] = useLocation();
@@ -68,6 +70,9 @@ export default function LeadDetail() {
   const [selectedVisit, setSelectedVisit] = useState<VisitDetailsType | null>(
     null
   );
+
+  const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
+  const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<ToDoType | null>(null);
   const [visitDialogOpen, setVisitDialogOpen] = useState(false);
@@ -276,7 +281,7 @@ export default function LeadDetail() {
     }
   };
 
-  const haandleAddNote = async () => {
+  const handleAddNote = async () => {
     await submitNote({
       note: note,
       added_by: "Administrator",
@@ -286,6 +291,8 @@ export default function LeadDetail() {
       parenttype: "Lead",
       doctype: "CRM Note",
     });
+
+    setNote("");
   };
 
   const handleAddTask = () => {
@@ -302,6 +309,10 @@ export default function LeadDetail() {
       assigned_by: "Administrator",
       assigned_by_full_name: "Administrator",
     });
+
+    setTaskTitle("");
+    setTaskDate("");
+    setTaskTime("");
   };
 
   const handleScheduleMeetingFormChange = (
@@ -479,7 +490,7 @@ export default function LeadDetail() {
 
       {/* Tabbed Content */}
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="justify-start w-full px-1 overflow-x-auto border-b rounded-md">
+        <TabsList className="justify-start w-full px-1 overflow-x-auto border-b rounded-md h-fit">
           <TabsTrigger value="overview" className="gap-2">
             <FileText className="w-4 h-4" />
             Overview
@@ -613,7 +624,14 @@ export default function LeadDetail() {
             <div className="space-y-3">
               {leadDetails.data && leadDetails.data.notes.length > 0 ? (
                 leadDetails.data.notes.map((note) => (
-                  <div key={note.name} className="pb-2 border-b last:border-0">
+                  <div
+                    key={note.name}
+                    className="pb-2 border-b last:border-0 cursor-pointer"
+                    onClick={() => {
+                      setIsNoteModalOpen(true);
+                      setSelectedNote(note);
+                    }}
+                  >
                     <div dangerouslySetInnerHTML={{ __html: note.note }}></div>
                     <p className="mt-1 text-xs text-muted-foreground">
                       Added on {new Date(note.creation).toLocaleDateString()}
@@ -827,7 +845,7 @@ export default function LeadDetail() {
                 />
                 <div className="flex justify-end">
                   <DialogClose>
-                    <Button onClick={haandleAddNote}>Add Note</Button>
+                    <Button onClick={handleAddNote}>Add Note</Button>
                   </DialogClose>
                 </div>
               </div>
@@ -952,10 +970,14 @@ export default function LeadDetail() {
 
         <TaskModal
           isOpen={isTaskModalOpen}
-          onClose={() => setIsTaskModalOpen(false)}
+          onClose={() => {
+            setIsTaskModalOpen(false);
+            refetchTask();
+          }}
           task={{
+            name: selectedTask?.name || "",
             title: selectedTask?.custom_type_of_activity || "",
-            dueDate: !!selectedTask?.date
+            dueDate: selectedTask?.date
               ? `Due: ${format(
                   new Date(selectedTask?.date || ""),
                   "dd MMM, yyyy"
@@ -965,6 +987,17 @@ export default function LeadDetail() {
             description: selectedTask?.description || "",
           }}
         />
+
+        {selectedNote && (
+          <NoteCard
+            isOpen={isNoteModalOpen}
+            onClose={() => {
+              setIsNoteModalOpen(false);
+              refetchLead();
+            }}
+            noteDetails={selectedNote}
+          />
+        )}
       </div>
     </PageContainer>
   );

@@ -447,7 +447,7 @@ export type LeadDetails = {
 };
 
 export interface Note {
-  name: number;
+  name: string;
   owner: string;
   creation: Date;
   modified: Date;
@@ -464,9 +464,9 @@ export interface Note {
 }
 
 export interface PostNoteType {
-  name?: number;
+  name?: string;
   owner?: string;
-  creation?: Date;
+  creation?: Date | string;
   modified?: Date;
   modified_by?: string;
   docstatus?: number;
@@ -474,10 +474,10 @@ export interface PostNoteType {
   note?: string;
   added_by?: string;
   added_on?: Date | string;
-  parent: string;
-  parentfield: string;
-  parenttype: string;
-  doctype: string;
+  parent?: string;
+  parentfield?: string;
+  parenttype?: string;
+  doctype?: string;
 }
 
 // Task Types
@@ -582,7 +582,7 @@ export interface PostVisitDetailsType {
 // }
 
 export type PostMarkTaskCloseType = {
-  task_id: string;
+  todo_id: string;
 };
 
 export interface PostLeadType {
