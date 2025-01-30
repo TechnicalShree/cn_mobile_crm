@@ -219,7 +219,10 @@ export default function LeadDetail() {
     window.onReceiveLocation = function (location) {
       console.log("Received location:", location);
       alert(
-        "Latitude: " + location.latitude + "\nLongitude: " + location.longitude
+        "hbhbs db sdf Latitude: " +
+          location.latitude +
+          "\nkjjsdk nlsd Longitude: " +
+          location.longitude
       );
     };
 
