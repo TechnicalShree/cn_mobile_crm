@@ -213,7 +213,7 @@ export default function LeadDetail() {
     action: "check_in" | "completed"
   ) => {
     // Call this to get location from React Native
-    window.getLocationFromApp();
+    window?.getLocationFromApp();
 
     // Handle the received location
     window.onReceiveLocation = function (location) {
@@ -224,24 +224,23 @@ export default function LeadDetail() {
           "\nkjjsdk nlsd Longitude: " +
           location.longitude
       );
-    };
+      if (location) {
+        const payload: PostVisitDetailsType = {
+          name: visit.name,
+          status: action === "check_in" ? "Visit Started" : "Visit Done",
+        };
 
-    if (navigator.geolocation) {
-      const payload: PostVisitDetailsType = {
-        name: visit.name,
-        status: action === "check_in" ? "Visit Started" : "Visit Done",
-      };
-
-      if (action === "check_in") {
-        payload.is_visit_started = 1;
-        payload.start_time = format(new Date(), "HH:mm:ss");
-      } else if (action === "completed") {
-        payload.is_visit_done = 1;
-        payload.end_time = format(new Date(), "HH:mm:ss");
+        if (action === "check_in") {
+          payload.is_visit_started = 1;
+          payload.start_time = format(new Date(), "HH:mm:ss");
+        } else if (action === "completed") {
+          payload.is_visit_done = 1;
+          payload.end_time = format(new Date(), "HH:mm:ss");
+        }
+        updateMeeting(payload);
+        setVisitDialogOpen(false);
       }
-      updateMeeting(payload);
-      setVisitDialogOpen(false);
-    }
+    };
   };
 
   const handleScheduleMeeting = () => {
@@ -969,7 +968,19 @@ export default function LeadDetail() {
 
                 <div className="flex justify-end gap-2 pt-2">
                   <DialogClose>
-                    <Button variant="outline">Cancel</Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setScheduleMeetingForm({
+                          purpose: { value: "", error: false },
+                          date: { value: new Date(), error: false },
+                          time: { value: "", error: false },
+                          location_area: { value: "", error: false },
+                        });
+                      }}
+                    >
+                      Cancel
+                    </Button>
                   </DialogClose>
                   <DialogClose>
                     <Button onClick={handleScheduleMeeting}>
