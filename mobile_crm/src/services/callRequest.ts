@@ -3,6 +3,8 @@ import axios, { AxiosError, AxiosRequestHeaders } from "axios";
 declare global {
   interface Window {
     csrf_token?: string;
+    getLocationFromApp: () => void;
+    onReceiveLocation: (value: any) => void;
   }
 }
 

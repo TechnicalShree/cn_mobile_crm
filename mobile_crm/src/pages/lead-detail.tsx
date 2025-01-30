@@ -212,6 +212,17 @@ export default function LeadDetail() {
     visit: VisitDetailsType,
     action: "check_in" | "completed"
   ) => {
+    // Call this to get location from React Native
+    window.getLocationFromApp();
+
+    // Handle the received location
+    window.onReceiveLocation = function (location) {
+      console.log("Received location:", location);
+      alert(
+        "Latitude: " + location.latitude + "\nLongitude: " + location.longitude
+      );
+    };
+
     if (navigator.geolocation) {
       const payload: PostVisitDetailsType = {
         name: visit.name,
