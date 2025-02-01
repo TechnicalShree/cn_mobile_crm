@@ -124,7 +124,7 @@ export interface LeadType {
   first_name: string;
   last_name: null | string;
   mobile_no: string;
-  whatsapp_no: null;
+  custom_client_whatsapp_no: null | string;
   email_id: string;
   salutation: null;
   lead_date: Date | null;
@@ -343,7 +343,7 @@ export type LeadDetails = {
   last_name: string | null;
   middle_name: string | null;
   mobile_no: string;
-  whatsapp_no: string | null;
+  custom_client_whatsapp_no: string | null;
   email_id: string;
   salutation: string | null;
   lead_date: Date | null;

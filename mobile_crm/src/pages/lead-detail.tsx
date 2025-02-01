@@ -480,12 +480,14 @@ export default function LeadDetail() {
                 Email
               </Button>
             )}
-            {!!lead.whatsapp_no && (
+            {!!lead.custom_client_whatsapp_no && (
               <Button
                 variant="outline"
                 size="sm"
                 className="gap-1"
-                onClick={() => window.open(`https://wa.me/${lead.whatsapp_no}`)}
+                onClick={() =>
+                  window.open(`https://wa.me/${lead.custom_client_whatsapp_no}`)
+                }
               >
                 <SiWhatsapp className="h-3.5 w-3.5" />
                 WhatsApp
@@ -589,8 +591,8 @@ export default function LeadDetail() {
                 <div className="flex items-center gap-3">
                   <SiWhatsapp className="w-4 h-4 text-muted-foreground shrink-0" />
                   <span className="text-sm">
-                    {lead.whatsapp_no || "-"}{" "}
-                    {lead.whatsapp_no ? "(Registered)" : ""}
+                    {lead.custom_client_whatsapp_no || "-"}{" "}
+                    {lead.custom_client_whatsapp_no ? "(Registered)" : ""}
                   </span>
                 </div>
               </div>

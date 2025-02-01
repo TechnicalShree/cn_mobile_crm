@@ -84,13 +84,15 @@ export default function LeadCard({ lead }: { lead: LeadType }) {
               <Mail className="h-3.5 w-3.5" />
             </Button>
           )}
-          {!!lead.whatsapp_no && (
+          {!!lead.custom_client_whatsapp_no && (
             <Button
               variant="ghost"
               size="icon"
               className="h-7 w-7"
               title="WhatsApp"
-              onClick={() => window.open(`https://wa.me/${lead.whatsapp_no}`)}
+              onClick={() =>
+                window.open(`https://wa.me/${lead.custom_client_whatsapp_no}`)
+              }
             >
               <SiWhatsapp className="h-3.5 w-3.5" />
             </Button>
