@@ -4,7 +4,7 @@ declare global {
   interface Window {
     csrf_token?: string;
     getLocationFromApp: () => void;
-    onReceiveLocation: (value: unknown) => void;
+    onReceiveLocation: (value: { latitude: number; longitude: number }) => void;
   }
 }
 

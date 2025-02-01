@@ -7,7 +7,7 @@ import TaskList from "../components/dashboard/task-list";
 import ScheduledVisits from "../components/dashboard/scheduled-visits";
 import { dashboardStats } from "../lib/mock-data";
 import { Link } from "wouter";
-import { UserPlus, Users } from "lucide-react";
+import { Briefcase, Mail, UserPlus, Users } from "lucide-react";
 import { useFetchLeadAndOpportunityStats } from "../services/query";
 import { LeadForm } from "../components/modals/create-lead";
 import { useState } from "react";
@@ -66,11 +66,18 @@ export default function Dashboard() {
         <div className="flex items-center gap-4">
           {/* <Avatar className="w-10 h-10" /> */}
           <div>
-            <h1 className="text-xl font-bold">{dashboardStats.user.name}</h1>
-            <div className="flex items-center gap-2 text-sm text-gray-500">
-              <span>{dashboardStats.user.email}</span>
-              <span>•</span>
-              <span className="text-primary">{dashboardStats.user.role}</span>
+            <h1 className="text-xl font-bold mb-1">
+              {dashboardStats.user.name}
+            </h1>
+            <div className="flex flex-col items-start text-sm text-gray-500">
+              <div className="flex items-center gap-2 text-gray-600">
+                <Mail className="h-4 w-4" />
+                <span>{dashboardStats.user.email}</span>
+              </div>
+              <div className="flex items-center gap-2 text-primary">
+                <Briefcase className="h-4 w-4 text-xs" />
+                <span>Sales Executive</span>
+              </div>
             </div>
           </div>
         </div>

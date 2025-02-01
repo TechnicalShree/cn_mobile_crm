@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -12,30 +12,41 @@ import { Button } from "../components/ui/button";
 import { Label } from "../components/ui/label";
 import { useFrappeAuth } from "frappe-react-sdk";
 import { Eye, EyeOff } from "lucide-react";
+import { useLocation } from "wouter";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const { login } = useFrappeAuth();
+  const { login, currentUser } = useFrappeAuth();
   const [showPassword, setShowPassword] = useState(false);
+  const [, navigate] = useLocation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    login({
-      username: email,
-      password,
-    });
-    setError("");
+    try {
+      setError("");
+      const data = await login({
+        username: email,
+        password,
+      });
 
-    // Here you would typically handle the login logic
-    // For this example, we'll just simulate a login check
-    if (email === "user@example.com" && password === "password") {
-      alert("Login successful!");
-    } else {
-      setError("Invalid email or password");
+      if (data?.message && data.message === "Logged In") {
+        navigate("/mobile_crm");
+      }
+      setError(data.toString());
+    } catch (error: any) {
+      setError(error?.message || "Something went wrong!");
+      console.log("Login failed. Please try again ============ ", error);
     }
   };
+
+  useEffect(() => {
+    if (currentUser) {
+      navigate("/mobile_crm");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser]);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">

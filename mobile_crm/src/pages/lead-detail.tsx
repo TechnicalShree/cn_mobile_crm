@@ -546,7 +546,7 @@ export default function LeadDetail() {
                   <SiWhatsapp className="w-4 h-4 text-muted-foreground shrink-0" />
                   <span className="text-sm">
                     {lead.whatsapp_no || "-"}{" "}
-                    {!!lead.whatsapp_no ? "(Registered)" : ""}
+                    {lead.whatsapp_no ? "(Registered)" : ""}
                   </span>
                 </div>
               </div>

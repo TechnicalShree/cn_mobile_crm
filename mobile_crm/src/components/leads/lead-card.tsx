@@ -62,33 +62,39 @@ export default function LeadCard({ lead }: { lead: LeadType }) {
           className="flex justify-end gap-1.5 mt-2"
           onClick={(e) => e.preventDefault()}
         >
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7"
-            title="Call"
-            onClick={() => window.open(`tel:${lead.phone}`)}
-          >
-            <Phone className="h-3.5 w-3.5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7"
-            title="Email"
-            onClick={() => window.open(`mailto:${lead.email_id}`)}
-          >
-            <Mail className="h-3.5 w-3.5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7"
-            title="WhatsApp"
-            onClick={() => window.open(`https://wa.me/${lead.mobile_no}`)}
-          >
-            <SiWhatsapp className="h-3.5 w-3.5" />
-          </Button>
+          {!!lead.phone && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7"
+              title="Call"
+              onClick={() => window.open(`tel:${lead.phone}`)}
+            >
+              <Phone className="h-3.5 w-3.5" />
+            </Button>
+          )}
+          {!!lead.email_id && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7"
+              title="Email"
+              onClick={() => window.open(`mailto:${lead.email_id}`)}
+            >
+              <Mail className="h-3.5 w-3.5" />
+            </Button>
+          )}
+          {!!lead.whatsapp_no && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7"
+              title="WhatsApp"
+              onClick={() => window.open(`https://wa.me/${lead.whatsapp_no}`)}
+            >
+              <SiWhatsapp className="h-3.5 w-3.5" />
+            </Button>
+          )}
           <Dialog>
             <DialogTrigger asChild>
               <Button
