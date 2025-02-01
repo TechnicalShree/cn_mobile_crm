@@ -36,6 +36,10 @@ def update_daily_visits():
             data["is_visit_done"] = visit.get("is_visit_done")
             data["end_time"] = visit.get("end_time")
 
+        data["is_location"] = visit.get("is_location")
+        data["location"] = json.dumps(visit.get("location"))
+        data["custom_start_location"] = json.dumps(visit.get("custom_start_location"))
+
         frappe.db.set_value("Daily Visit Schedule", visit.get("name"), data)
 
         frappe.db.commit()

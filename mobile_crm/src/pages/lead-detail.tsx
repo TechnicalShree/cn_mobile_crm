@@ -203,38 +203,57 @@ export default function LeadDetail() {
 
   const lead = leadDetails?.data;
 
+  const handleVisitUpdate = (
+    visit: VisitDetailsType,
+    action: string,
+    longitude: string | number,
+    latitude: string | number
+  ) => {
+    const payload: PostVisitDetailsType = {
+      name: visit.name,
+      status: action === "check_in" ? "Visit Started" : "Visit Done",
+    };
+
+    payload.is_location = 1;
+    payload.location = {
+      type: "FeatureCollection",
+      features: [
+        {
+          type: "Feature",
+          properties: {},
+          geometry: {
+            type: "Point",
+            coordinates: [longitude, latitude],
+          },
+        },
+      ],
+    };
+
+    if (action === "check_in") {
+      payload.is_visit_started = 1;
+      payload.start_time = format(new Date(), "HH:mm:ss");
+      payload.custom_start_location = payload.location;
+    } else if (action === "completed") {
+      payload.is_visit_done = 1;
+      payload.end_time = format(new Date(), "HH:mm:ss");
+    }
+
+    updateMeeting(payload);
+    setVisitDialogOpen(false);
+  };
+
   // Visit status management functions
   const handleVisitAction = (
     visit: VisitDetailsType,
     action: "check_in" | "completed"
   ) => {
     // Call this to get location from React Native
-    window?.getLocationFromApp();
+    window?.getLocationFromApp?.();
 
     // Handle the received location
     window.onReceiveLocation = function (location) {
-      console.log("Received location:", location);
-      alert(
-        "hbhbs db sdf Latitude: " +
-          location.latitude +
-          "\nkjjsdk nlsd Longitude: " +
-          location.longitude
-      );
       if (location) {
-        const payload: PostVisitDetailsType = {
-          name: visit.name,
-          status: action === "check_in" ? "Visit Started" : "Visit Done",
-        };
-
-        if (action === "check_in") {
-          payload.is_visit_started = 1;
-          payload.start_time = format(new Date(), "HH:mm:ss");
-        } else if (action === "completed") {
-          payload.is_visit_done = 1;
-          payload.end_time = format(new Date(), "HH:mm:ss");
-        }
-        updateMeeting(payload);
-        setVisitDialogOpen(false);
+        handleVisitUpdate(visit, action, location.longitude, location.latitude);
       }
     };
   };
@@ -893,43 +912,6 @@ export default function LeadDetail() {
 
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Date</label>
-                  {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
-                     <StaticDatePicker
-                      value={dayjs(scheduleMeetingForm.date.value)}
-                      onChange={(value) =>
-                        handleScheduleMeetingFormChange("date", value)
-                      }
-                      slots={{
-                        actionBar: () => null, // Completely remove the action bar
-                      }}
-                      slotProps={{
-                        toolbar: { hidden: true }, // Disable the toolbar
-                      }}
-                      defaultValue={dayjs(format(new Date(), "yyyy-MM-dd"))}
-                      minDate={dayjs(format(new Date(), "yyyy-MM-dd"))}
-                    />
-                    <DatePicker
-                      value={dayjs(scheduleMeetingForm.date.value)}
-                      onChange={(value) =>
-                        handleScheduleMeetingFormChange("date", value)
-                      }
-                      slots={{
-                        actionBar: () => null, // Completely remove the action bar
-                      }}
-                      slotProps={{
-                        toolbar: { hidden: true }, // Disable the toolbar
-                      }}
-                      defaultValue={dayjs(format(new Date(), "yyyy-MM-dd"))}
-                      minDate={dayjs(format(new Date(), "yyyy-MM-dd"))}
-                    />
-                  </LocalizationProvider>
-                  <DatePickerComp
-                    date={scheduleMeetingForm.date.value}
-                    setDate={(value) =>
-                      handleScheduleMeetingFormChange("date", value)
-                    }
-                  /> */}
-
                   <Input
                     type="date"
                     value={scheduleMeetingForm.date.value}

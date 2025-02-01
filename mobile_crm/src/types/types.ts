@@ -544,7 +544,8 @@ export interface PostVisitDetailsType {
   assigned_to?: null;
   assigned_to_employee_name?: null;
   comment?: null;
-  location?: null;
+  location?: any | string;
+  custom_start_location?: any | string;
   start_time?: string;
   end_time?: string;
   custom_purpose?: string;
