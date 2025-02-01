@@ -215,7 +215,7 @@ export default function LeadDetail() {
     };
 
     payload.is_location = 1;
-    payload.location = {
+    const location = {
       type: "FeatureCollection",
       features: [
         {
@@ -232,10 +232,11 @@ export default function LeadDetail() {
     if (action === "check_in") {
       payload.is_visit_started = 1;
       payload.start_time = format(new Date(), "HH:mm:ss");
-      payload.custom_start_location = payload.location;
+      payload.custom_start_location = location;
     } else if (action === "completed") {
       payload.is_visit_done = 1;
       payload.end_time = format(new Date(), "HH:mm:ss");
+      payload.location = location;
     }
 
     updateMeeting(payload);
@@ -254,6 +255,11 @@ export default function LeadDetail() {
     window.onReceiveLocation = function (location) {
       if (location) {
         handleVisitUpdate(visit, action, location.longitude, location.latitude);
+      } else {
+        toast({
+          title: "Error",
+          description: "Something went wrong. Location not found.",
+        });
       }
     };
   };
