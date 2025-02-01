@@ -9,6 +9,7 @@ def update_daily_visits():
         # Get the raw request data
         raw_data = frappe.request.get_data(as_text=True)
 
+
         # Parse the JSON data into a Python dictionary
         data = json.loads(raw_data)
 
@@ -31,14 +32,14 @@ def update_daily_visits():
         if visit.get("status") == "Visit Started":
             data["is_visit_started"] = visit.get("is_visit_started")
             data["start_time"] = visit.get("start_time")
+            # data["custom_start_location"] = json.dumps(visit.get("custom_start_location"))
 
         elif visit.get("status") == "Visit Done":
             data["is_visit_done"] = visit.get("is_visit_done")
             data["end_time"] = visit.get("end_time")
+            data["is_location"] = visit.get("is_location")
+            data["location"] = json.dumps(visit.get("location"))
 
-        data["is_location"] = visit.get("is_location")
-        data["location"] = json.dumps(visit.get("location"))
-        data["custom_start_location"] = json.dumps(visit.get("custom_start_location"))
 
         frappe.db.set_value("Daily Visit Schedule", visit.get("name"), data)
 

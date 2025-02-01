@@ -52,12 +52,14 @@ import {
   useUpdateMeetingDetails,
   useSubmitMeetingDetails,
 } from "../services/mutation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "../lib/utils";
 import { format } from "date-fns";
 import { useToast } from "../hooks/use-toast";
 import { NoteCard } from "../components/modals/note-details";
 import { TaskModal } from "../components/modals/task-details";
+import { LoadingButton } from "../components/ui/loading-button";
+import VisitDetailModal from "../components/modals/visit-details";
 
 export default function LeadDetail() {
   const [location] = useLocation();
@@ -73,6 +75,7 @@ export default function LeadDetail() {
   const [selectedTask, setSelectedTask] = useState<ToDoType | null>(null);
   const [visitDialogOpen, setVisitDialogOpen] = useState(false);
   const [taskDialogOpen, setTaskDialogOpen] = useState(false);
+  const [isVisitUpdate, setIsVisitUpdate] = useState(false);
   const [taskTitle, setTaskTitle] = useState("");
   const [taskDate, setTaskDate] = useState("");
   const [taskTime, setTaskTime] = useState("");
@@ -155,18 +158,53 @@ export default function LeadDetail() {
 
   const { mutate: submitMeeting } = useSubmitMeetingDetails({
     options: {
-      onError: () => {
+      onError: (data) => {
         toast({
           title: "Error",
-          description: "Something went wrong. Please try again.",
+          description:
+            "Something went wrong. Please try again." + JSON.stringify(data),
         });
+        setScheduleMeetingForm({
+          purpose: {
+            value: "",
+            error: false,
+          },
+          date: {
+            value: new Date().toISOString().split("T")[0],
+            error: false,
+          },
+          time: {
+            value: "",
+            error: false,
+          },
+          location_area: {
+            value: "",
+            error: false,
+          },
+        });
+        setTaskDialogOpen(false);
       },
       onSuccess: () => {
         refetchVisit();
 
-        setTaskTitle("");
-        setTaskDate("");
-        setTaskTime("");
+        setScheduleMeetingForm({
+          purpose: {
+            value: "",
+            error: false,
+          },
+          date: {
+            value: new Date().toISOString().split("T")[0],
+            error: false,
+          },
+          time: {
+            value: "",
+            error: false,
+          },
+          location_area: {
+            value: "",
+            error: false,
+          },
+        });
         setTaskDialogOpen(false);
 
         toast({
@@ -179,18 +217,15 @@ export default function LeadDetail() {
 
   const { mutate: updateMeeting } = useUpdateMeetingDetails({
     options: {
-      onError: () => {
+      onError: (data) => {
         toast({
           title: "Error",
-          description: "Something went wrong. Please try again.",
+          description:
+            "Something went wrong. Please try again." + JSON.stringify(data),
         });
       },
       onSuccess: () => {
         refetchVisit();
-
-        setTaskTitle("");
-        setTaskDate("");
-        setTaskTime("");
         setTaskDialogOpen(false);
 
         toast({
@@ -203,57 +238,58 @@ export default function LeadDetail() {
 
   const lead = leadDetails?.data;
 
+  const [visit, setVisit] = useState<VisitDetailsType | null>(null);
+  const [action, setAction] = useState<"check_in" | "completed">("check_in");
+
   const handleVisitUpdate = (
     visit: VisitDetailsType,
-    action: string,
-    longitude: string | number,
-    latitude: string | number
+    action: "check_in" | "completed",
+    longitude?: string | number,
+    latitude?: string | number
   ) => {
     const payload: PostVisitDetailsType = {
       name: visit.name,
       status: action === "check_in" ? "Visit Started" : "Visit Done",
     };
 
-    payload.is_location = 1;
-    const location = {
-      type: "FeatureCollection",
-      features: [
-        {
-          type: "Feature",
-          properties: {},
-          geometry: {
-            type: "Point",
-            coordinates: [longitude, latitude],
-          },
-        },
-      ],
-    };
-
     if (action === "check_in") {
       payload.is_visit_started = 1;
       payload.start_time = format(new Date(), "HH:mm:ss");
-      payload.custom_start_location = location;
     } else if (action === "completed") {
-      payload.is_visit_done = 1;
-      payload.end_time = format(new Date(), "HH:mm:ss");
-      payload.location = location;
+      if (longitude && latitude) {
+        payload.is_location = 1;
+        payload.is_visit_done = 1;
+        payload.end_time = format(new Date(), "HH:mm:ss");
+        payload.location = {
+          type: "FeatureCollection",
+          features: [
+            {
+              type: "Feature",
+              properties: {},
+              geometry: {
+                type: "Point",
+                coordinates: [longitude, latitude],
+              },
+            },
+          ],
+        };
+      } else {
+        toast({
+          title: "Error",
+          description: "Something went wrong. Location not found.",
+        });
+        setVisitDialogOpen(false);
+        return;
+      }
     }
 
     updateMeeting(payload);
     setVisitDialogOpen(false);
   };
 
-  // Visit status management functions
-  const handleVisitAction = (
-    visit: VisitDetailsType,
-    action: "check_in" | "completed"
-  ) => {
-    // Call this to get location from React Native
-    window?.getLocationFromApp?.();
-
-    // Handle the received location
+  useEffect(() => {
     window.onReceiveLocation = function (location) {
-      if (location) {
+      if (location && visit && action) {
         handleVisitUpdate(visit, action, location.longitude, location.latitude);
       } else {
         toast({
@@ -262,6 +298,22 @@ export default function LeadDetail() {
         });
       }
     };
+  }, [visit, action]);
+
+  const handleVisitAction = (
+    visit: VisitDetailsType,
+    action: "check_in" | "completed"
+  ) => {
+    if (action === "check_in") {
+      handleVisitUpdate(visit, action);
+    } else if (action === "completed") {
+      setVisit(() => visit);
+      setAction(() => action);
+
+      setTimeout(() => {
+        window?.getLocationFromApp?.();
+      }, 100);
+    }
   };
 
   const handleScheduleMeeting = () => {
@@ -284,35 +336,6 @@ export default function LeadDetail() {
       time_mins: minutes,
       status: "Visit Scheduled",
     });
-  };
-
-  const getVisitActionButton = (status: string) => {
-    switch (status) {
-      case "Visit Scheduled":
-        return (
-          <Button
-            className="w-full"
-            onClick={() =>
-              selectedVisit && handleVisitAction(selectedVisit, "check_in")
-            }
-          >
-            Check In
-          </Button>
-        );
-      case "Visit Started":
-        return (
-          <Button
-            className="w-full"
-            onClick={() =>
-              selectedVisit && handleVisitAction(selectedVisit, "completed")
-            }
-          >
-            Mark as Completed
-          </Button>
-        );
-      default:
-        return null;
-    }
   };
 
   const handleAddNote = async () => {
@@ -772,11 +795,14 @@ export default function LeadDetail() {
                 </div>
               </div>
 
-              <div className="p-4 rounded-lg bg-accent/50">
-                <p className="text-sm">
-                  Your current location will be recorded to complete the visit.
-                </p>
-              </div>
+              {selectedVisit?.status === "Visit Started" && (
+                <div className="p-4 rounded-lg bg-accent/50">
+                  <p className="text-sm">
+                    Your current location will be recorded to complete the
+                    visit.
+                  </p>
+                </div>
+              )}
 
               <div className="flex justify-end gap-2 pt-2">
                 <Button
@@ -785,7 +811,32 @@ export default function LeadDetail() {
                 >
                   Cancel
                 </Button>
-                {getVisitActionButton(selectedVisit?.status || "scheduled")}
+
+                {selectedVisit?.status === "Visit Scheduled" && (
+                  <LoadingButton
+                    className="w-full disabled:opacity-65"
+                    onClick={() =>
+                      selectedVisit &&
+                      handleVisitAction(selectedVisit, "check_in")
+                    }
+                    loading={isVisitUpdate}
+                  >
+                    Check In
+                  </LoadingButton>
+                )}
+
+                {selectedVisit?.status === "Visit Started" && (
+                  <LoadingButton
+                    className="w-full disabled:opacity-65"
+                    onClick={() =>
+                      selectedVisit &&
+                      handleVisitAction(selectedVisit, "completed")
+                    }
+                    loading={isVisitUpdate}
+                  >
+                    Mark as Completed
+                  </LoadingButton>
+                )}
               </div>
             </div>
           </DialogContent>

@@ -18,8 +18,16 @@ const tabs = [
     value: TabName.ALL,
   },
   {
-    label: "Lead",
-    value: TabName.LEAD,
+    label: "Open",
+    value: TabName.OPEN,
+  },
+  {
+    label: "Unresponded",
+    value: TabName.UNRESPONDED,
+  },
+  {
+    label: "Hot",
+    value: TabName.HOT,
   },
   {
     label: "Opportunity",
@@ -30,16 +38,8 @@ const tabs = [
     value: TabName.QUOTATION,
   },
   {
-    label: "Open",
-    value: TabName.OPEN,
-  },
-  {
-    label: "Hot",
-    value: TabName.HOT,
-  },
-  {
-    label: "Unresponded",
-    value: TabName.UNRESPONDED,
+    label: "Lead",
+    value: TabName.LEAD,
   },
 ];
 

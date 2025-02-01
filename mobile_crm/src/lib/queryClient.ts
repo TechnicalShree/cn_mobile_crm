@@ -18,13 +18,14 @@ export const queryClient = new QueryClient({
 
         return res.json();
       },
-      refetchInterval: false,
-      refetchOnWindowFocus: false,
-      staleTime: Infinity,
-      retry: false,
+      // refetchInterval: false,
+      // refetchOnWindowFocus: false,
+      // staleTime: Infinity,
+      // retry: false,
+      refetchOnMount: "always",
     },
     mutations: {
       retry: false,
-    }
+    },
   },
 });
