@@ -71,16 +71,16 @@ export default function Dashboard() {
           {/* <Avatar className="w-10 h-10" /> */}
           <div>
             <h1 className="mb-1 text-xl font-bold">
-              {data?.message.employee_name || "-"}
+              {data?.message?.employee_name || "-"}
             </h1>
             <div className="flex flex-col items-start text-sm text-gray-500">
-              {data?.message.user_id && (
+              {data?.message?.user_id && (
                 <div className="flex items-center gap-2 text-gray-600">
                   <Mail className="w-4 h-4" />
                   <span>{data.message.user_id}</span>
                 </div>
               )}
-              {data?.message.designation && (
+              {data?.message?.designation && (
                 <div className="flex items-center gap-2 text-primary">
                   <Briefcase className="w-4 h-4 text-xs" />
                   <span>{data.message.designation}</span>
