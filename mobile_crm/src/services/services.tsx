@@ -114,6 +114,14 @@ export const getTaskList =
       },
     });
 
+export const getEmployeeDetails =
+  <TData,>(): (() => Promise<TData>) =>
+  () =>
+    requestWrapper<TData>({
+      url: API_END_POINTS.getEmployeeDetails,
+      method: "GET",
+    });
+
 // // Note List API
 // export const getNoteList =
 //   <TData,>({ lead_id }: { lead_id: string }): (() => Promise<TData>) =>

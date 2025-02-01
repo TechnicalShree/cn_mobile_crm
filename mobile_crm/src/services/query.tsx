@@ -9,6 +9,7 @@ import {
   getLeadAnalysisStats,
   getLeadAndOpportunityStats,
   getTaskList,
+  getEmployeeDetails,
 } from "./services";
 import { AxiosError } from "axios";
 import {
@@ -19,6 +20,7 @@ import {
   LeadDetailsType,
   LeadAnalysisType,
   DashboardStatsInfoType,
+  EmployeeDetailResponseType,
 } from "../types/types";
 
 export const useFetchLeadAndOpportunityStats = <
@@ -104,6 +106,20 @@ export const useFetchTaskList = <TData = ToDoListType, TError = AxiosError>({
   useQuery<ToDoListType, TError, TData>(
     ["getTaskList", lead_id],
     getTaskList<ToDoListType>({ lead_id }),
+    options
+  );
+
+export const useFetchEmployeeDetails = <
+  TData = EmployeeDetailResponseType,
+  TError = AxiosError
+>({
+  options,
+}: {
+  options?: UseQueryOptions<EmployeeDetailResponseType, TError, TData>;
+}) =>
+  useQuery<EmployeeDetailResponseType, TError, TData>(
+    ["getEmployeeDetails"],
+    getEmployeeDetails<EmployeeDetailResponseType>(),
     options
   );
 

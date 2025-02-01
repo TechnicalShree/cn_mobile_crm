@@ -25,7 +25,6 @@ interface NoteModalProps {
 
 export function NoteCard({ isOpen, onClose, noteDetails }: NoteModalProps) {
   const [note, setNote] = useState(noteDetails);
-  const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState(note.note || "");
 
   const { mutate: updateNote } = useUpdateNote({
@@ -56,15 +55,12 @@ export function NoteCard({ isOpen, onClose, noteDetails }: NoteModalProps) {
       note: "",
       name: "",
     });
-    setIsEditing(false);
   };
 
   useEffect(() => {
     setNote(noteDetails);
     setEditedContent(noteDetails.note || "");
   }, [noteDetails]);
-
-  console.log(note, editedContent);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -84,32 +80,20 @@ export function NoteCard({ isOpen, onClose, noteDetails }: NoteModalProps) {
               </p>
             </DialogTitle>
           </DialogHeader>
-          {isEditing ? (
-            <div className="grid gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="content">Note</Label>
-                <Textarea
-                  id="content"
-                  value={editedContent}
-                  onChange={(e) => setEditedContent(e.target.value)}
-                  rows={4}
-                />
-              </div>
-              <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setIsEditing(false)}>
-                  Cancel
-                </Button>
-                <Button onClick={handleUpdate}>Save Changes</Button>
-              </div>
+          <div className="grid gap-4">
+            <div className="grid gap-2">
+              <Label htmlFor="content">Note</Label>
+              <Textarea
+                id="content"
+                value={editedContent}
+                onChange={(e) => setEditedContent(e.target.value)}
+                rows={4}
+              />
             </div>
-          ) : (
-            <div>
-              {note.note && <p className="mt-2">{note.note}</p>}
-              <div className="flex justify-end mt-4">
-                <Button onClick={() => setIsEditing(true)}>Edit Note</Button>
-              </div>
+            <div className="flex justify-end gap-2">
+              <Button onClick={handleUpdate}>Update</Button>
             </div>
-          )}
+          </div>
         </DialogContent>
       </DialogPortal>
     </Dialog>

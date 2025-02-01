@@ -8,13 +8,17 @@ import ScheduledVisits from "../components/dashboard/scheduled-visits";
 import { dashboardStats } from "../lib/mock-data";
 import { Link } from "wouter";
 import { Briefcase, Mail, UserPlus, Users } from "lucide-react";
-import { useFetchLeadAndOpportunityStats } from "../services/query";
+import {
+  useFetchEmployeeDetails,
+  useFetchLeadAndOpportunityStats,
+} from "../services/query";
 import { LeadForm } from "../components/modals/create-lead";
 import { useState } from "react";
 
 export default function Dashboard() {
   const { data: dashboardLeadStats } = useFetchLeadAndOpportunityStats({});
   const [isNewLeadModalOpen, setIsNewLeadModalOpen] = useState(false);
+  const { data } = useFetchEmployeeDetails({});
 
   const shortcuts = [
     {
@@ -66,18 +70,22 @@ export default function Dashboard() {
         <div className="flex items-center gap-4">
           {/* <Avatar className="w-10 h-10" /> */}
           <div>
-            <h1 className="text-xl font-bold mb-1">
-              {dashboardStats.user.name}
+            <h1 className="mb-1 text-xl font-bold">
+              {data?.message.employee_name || "-"}
             </h1>
             <div className="flex flex-col items-start text-sm text-gray-500">
-              <div className="flex items-center gap-2 text-gray-600">
-                <Mail className="h-4 w-4" />
-                <span>{dashboardStats.user.email}</span>
-              </div>
-              <div className="flex items-center gap-2 text-primary">
-                <Briefcase className="h-4 w-4 text-xs" />
-                <span>Sales Executive</span>
-              </div>
+              {data?.message.user_id && (
+                <div className="flex items-center gap-2 text-gray-600">
+                  <Mail className="w-4 h-4" />
+                  <span>{data.message.user_id}</span>
+                </div>
+              )}
+              {data?.message.designation && (
+                <div className="flex items-center gap-2 text-primary">
+                  <Briefcase className="w-4 h-4 text-xs" />
+                  <span>{data.message.designation}</span>
+                </div>
+              )}
             </div>
           </div>
         </div>

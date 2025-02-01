@@ -591,3 +591,52 @@ export interface PostLeadType {
   email_id: string;
   custom_budget_range: string;
 }
+
+// Employee Details....
+export interface EmployeeDetailResponseType {
+  message: EmployeeDetailType;
+}
+
+export interface EmployeeDetailType {
+  name: string;
+  owner: string;
+  creation: Date;
+  modified: Date;
+  modified_by: string;
+  docstatus: number;
+  idx: number;
+  employee: string;
+  naming_series: string;
+  first_name: string;
+  last_name: string;
+  employee_name: string;
+  gender: string;
+  date_of_birth: Date;
+  custom_is_locality_assigned: string;
+  date_of_joining: Date;
+  status: string;
+  user_id: string;
+  create_user_permission: number;
+  company: string;
+  designation: string;
+  notice_number_of_days: number;
+  date_of_retirement: Date;
+  prefered_contact_email: string;
+  unsubscribed: number;
+  current_accommodation_type: string;
+  permanent_accommodation_type: string;
+  ctc: number;
+  salary_currency: string;
+  salary_mode: string;
+  marital_status: string;
+  blood_group: string;
+  leave_encashed: string;
+  lft: number;
+  rgt: number;
+  old_parent: string;
+  doctype: string;
+  education: any[];
+  custom_assigned_locality: any[];
+  external_work_history: any[];
+  internal_work_history: any[];
+}

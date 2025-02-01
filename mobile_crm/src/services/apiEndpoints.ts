@@ -1,5 +1,7 @@
 const API_END_POINTS = {
   // Custom Methods
+  getEmployeeDetails:
+    "/api/method/cn_mobile_crm.api.emp_details.get_employee_detail",
   getLeadAndOpportunityStats:
     "/api/method/cn_mobile_crm.api.dashboard_stats.get_lead_and_opportunity_count",
   getLeadAnalysisStats:

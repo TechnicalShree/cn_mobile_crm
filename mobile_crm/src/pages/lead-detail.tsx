@@ -55,13 +55,9 @@ import {
 import { useState } from "react";
 import { cn } from "../lib/utils";
 import { format } from "date-fns";
-import dayjs, { Dayjs } from "dayjs";
 import { useToast } from "../hooks/use-toast";
 import { NoteCard } from "../components/modals/note-details";
 import { TaskModal } from "../components/modals/task-details";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { StaticDatePicker } from "@mui/x-date-pickers/StaticDatePicker";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider/LocalizationProvider";
 
 export default function LeadDetail() {
   const [location] = useLocation();
@@ -87,7 +83,7 @@ export default function LeadDetail() {
       error: false,
     },
     date: {
-      value: new Date(),
+      value: new Date().toISOString().split("T")[0],
       error: false,
     },
     time: {
@@ -332,23 +328,23 @@ export default function LeadDetail() {
     key: keyof typeof scheduleMeetingForm,
     value: unknown
   ) => {
-    if (key === "date") {
-      setScheduleMeetingForm((prevForm) => ({
-        ...prevForm,
-        [key]: {
-          error: false,
-          value: new Date((value as Dayjs).format("YYYY-MM-DD")),
-        },
-      }));
-    } else {
-      setScheduleMeetingForm((prevForm) => ({
-        ...prevForm,
-        [key]: {
-          error: false,
-          value,
-        },
-      }));
-    }
+    // if (key === "date") {
+    //   setScheduleMeetingForm((prevForm) => ({
+    //     ...prevForm,
+    //     [key]: {
+    //       error: false,
+    //       value: new Date((value as Dayjs).format("YYYY-MM-DD")),
+    //     },
+    //   }));
+    // } else {
+    setScheduleMeetingForm((prevForm) => ({
+      ...prevForm,
+      [key]: {
+        error: false,
+        value,
+      },
+    }));
+    // }
   };
 
   if (!lead) {
@@ -639,7 +635,7 @@ export default function LeadDetail() {
                 leadDetails.data.notes.map((note) => (
                   <div
                     key={note.name}
-                    className="pb-2 border-b last:border-0 cursor-pointer"
+                    className="pb-2 border-b cursor-pointer last:border-0"
                     onClick={() => {
                       setIsNoteModalOpen(true);
                       setSelectedNote(note);
@@ -897,8 +893,22 @@ export default function LeadDetail() {
 
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Date</label>
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <StaticDatePicker
+                  {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
+                     <StaticDatePicker
+                      value={dayjs(scheduleMeetingForm.date.value)}
+                      onChange={(value) =>
+                        handleScheduleMeetingFormChange("date", value)
+                      }
+                      slots={{
+                        actionBar: () => null, // Completely remove the action bar
+                      }}
+                      slotProps={{
+                        toolbar: { hidden: true }, // Disable the toolbar
+                      }}
+                      defaultValue={dayjs(format(new Date(), "yyyy-MM-dd"))}
+                      minDate={dayjs(format(new Date(), "yyyy-MM-dd"))}
+                    />
+                    <DatePicker
                       value={dayjs(scheduleMeetingForm.date.value)}
                       onChange={(value) =>
                         handleScheduleMeetingFormChange("date", value)
@@ -913,18 +923,38 @@ export default function LeadDetail() {
                       minDate={dayjs(format(new Date(), "yyyy-MM-dd"))}
                     />
                   </LocalizationProvider>
+                  <DatePickerComp
+                    date={scheduleMeetingForm.date.value}
+                    setDate={(value) =>
+                      handleScheduleMeetingFormChange("date", value)
+                    }
+                  /> */}
+
+                  <Input
+                    type="date"
+                    value={scheduleMeetingForm.date.value}
+                    onChange={(e) =>
+                      handleScheduleMeetingFormChange("date", e.target.value)
+                    }
+                    min={new Date().toISOString().split("T")[0]}
+                  />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Time</label>
-                    <Input
-                      value={scheduleMeetingForm.time.value}
-                      onChange={(e) =>
-                        handleScheduleMeetingFormChange("time", e.target.value)
-                      }
-                      type="time"
-                    />
+                    <div className="w-full">
+                      <Input
+                        value={scheduleMeetingForm.time.value}
+                        onChange={(e) =>
+                          handleScheduleMeetingFormChange(
+                            "time",
+                            e.target.value
+                          )
+                        }
+                        type="time"
+                      />
+                    </div>
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Location</label>
@@ -940,32 +970,6 @@ export default function LeadDetail() {
                     />
                   </div>
                 </div>
-
-                {/* Location tracking button */}
-                {/* <Button
-                variant="outline"
-                className="w-full h-auto gap-2 py-4"
-                onClick={() => {
-                  if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
-                      (position) => {
-                        console.log(position.coords);
-                        // Here we would typically save the coordinates
-                      },
-                      (error) => console.error(error)
-                    );
-                  }
-                }}
-              >
-                <MapPin className="w-4 h-4" />
-                <div className="flex flex-col items-start text-left">
-                  <span className="font-medium">Use Current Location</span>
-                  <span className="text-xs text-muted-foreground">
-                    Get exact coordinates for accurate visit tracking
-                  </span>
-                </div>
-              </Button> */}
-
                 <div className="flex justify-end gap-2 pt-2">
                   <DialogClose>
                     <Button
@@ -973,7 +977,10 @@ export default function LeadDetail() {
                       onClick={() => {
                         setScheduleMeetingForm({
                           purpose: { value: "", error: false },
-                          date: { value: new Date(), error: false },
+                          date: {
+                            value: new Date().toISOString().split("T")[0],
+                            error: false,
+                          },
                           time: { value: "", error: false },
                           location_area: { value: "", error: false },
                         });
