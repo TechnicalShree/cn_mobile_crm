@@ -9,7 +9,7 @@ def update_daily_visits():
         # Get the raw request data
         raw_data = frappe.request.get_data(as_text=True)
 
-        # Parse the JSON data
+        # Parse the JSON data into a Python dictionary
         data = json.loads(raw_data)
 
         # Extract the 'visit' object from the parsed data

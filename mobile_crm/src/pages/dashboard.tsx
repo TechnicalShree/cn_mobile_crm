@@ -47,7 +47,6 @@ export default function Dashboard() {
       count: dashboardLeadStats?.message.quotation_count ?? 0,
     },
   ];
-
   const metrics = [
     {
       label: "Lead Performance",
