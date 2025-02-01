@@ -114,7 +114,7 @@ export default function Leads() {
     return orFiltersList;
   }, [searchQuery, filters]);
 
-  const { data: leadList } = useFetchLeadList({
+  const { data: leadList, refetch: refetchLeadList } = useFetchLeadList({
     filters: leadFilters,
     or_filters: leadOrFilters,
   });
@@ -187,7 +187,10 @@ export default function Leads() {
       </div>
       <LeadForm
         isOpen={isNewLeadModalOpen}
-        onClose={() => setIsNewLeadModalOpen(false)}
+        onClose={() => {
+          setIsNewLeadModalOpen(false);
+          refetchLeadList();
+        }}
       />
     </PageContainer>
   );

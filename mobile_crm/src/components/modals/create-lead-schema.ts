@@ -12,7 +12,7 @@ const budgetRangeOptions = [
   "70 - 80 L",
   "60 - 70 L",
   "50 - 60 L",
-  "40-50 L",
+  "40 - 50 L",
 ] as const;
 
 export const leadFormSchema = z.object({
