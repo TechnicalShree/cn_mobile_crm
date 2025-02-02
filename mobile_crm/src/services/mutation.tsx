@@ -5,11 +5,13 @@ import {
   postMeetingDetails,
   postNoteDetails,
   postTaskDetails,
+  postUpdateLead,
   postUpdateNote,
   putMeetingDetails,
   putTaskDetails,
 } from "./services";
 import {
+  LeadType,
   PostLeadType,
   PostMarkTaskCloseType,
   PostNoteType,
@@ -108,6 +110,18 @@ export const useUpdateNote = <TError = AxiosError, TContext = unknown>({
   return useMutation<unknown, TError, PostNoteType, TContext>(
     ["postUpdateNote"],
     postUpdateNote<unknown, PostNoteType>(),
+    options
+  );
+};
+
+export const useUpdateLead = <TError = AxiosError, TContext = unknown>({
+  options,
+}: {
+  options?: UseMutationOptions<unknown, TError, LeadType, TContext>;
+}) => {
+  return useMutation<unknown, TError, LeadType, TContext>(
+    ["postUpdateLead"],
+    postUpdateLead<unknown, LeadType>(),
     options
   );
 };

@@ -7,3 +7,16 @@ export const TabName = {
   OPPORTUNITY: "Opportunity",
   UNRESPONDED: "Unresponded",
 };
+
+export const LEAD_STATUS_LIST = [
+  "Lead",
+  "Warm",
+  "Hot",
+  "Cold",
+  "Quotation",
+  "Opportunity",
+  "Not Interseted",
+  "Closed Won",
+  "Closed Lost",
+  "Negotiation",
+];

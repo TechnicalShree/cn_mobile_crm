@@ -1,7 +1,8 @@
 import { format } from "date-fns";
 import API_END_POINTS from "./apiEndpoints";
 import requestWrapper from "./callRequest";
-import { PostNoteType } from "../types/types";
+import { PostLeadType, PostNoteType } from "../types/types";
+import { de } from "date-fns/locale";
 
 export const getLeadAndOpportunityStats =
   <TData,>(): (() => Promise<TData>) =>
@@ -221,6 +222,20 @@ export const postUpdateNote = <TData, TVariables extends PostNoteType>(): ((
   return async (formData) => {
     return await requestWrapper<TData>({
       url: `${API_END_POINTS.crmNoteApi}/${formData.name}`,
+      method: "PUT",
+      data: JSON.stringify(formData),
+    });
+  };
+};
+
+export const postUpdateLead = <TData, TVariables extends PostLeadType>(): ((
+  formData: TVariables
+) => Promise<TData>) => {
+  return async (formData) => {
+    const name = formData.name;
+    delete formData.name || "";
+    return await requestWrapper<TData>({
+      url: `${API_END_POINTS.leadApi}/${name}`,
       method: "PUT",
       data: JSON.stringify(formData),
     });

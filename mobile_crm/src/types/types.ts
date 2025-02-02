@@ -315,6 +315,7 @@ export enum QualificationStatus {
 export enum Status {
   Open = "Open",
   Lead = "Lead",
+  Hot = "Hot",
   Replied = "Replied",
   Converted = "Converted",
   Quotation = "Quotation",
@@ -591,6 +592,7 @@ export interface PostLeadType {
   mobile_no: string;
   email_id: string;
   custom_budget_range: string;
+  name?: string;
 }
 
 // Employee Details....

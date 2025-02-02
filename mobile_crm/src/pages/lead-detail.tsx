@@ -42,7 +42,7 @@ import {
   VisitDetailsType,
   PostVisitDetailsType,
 } from "../types/types";
-import { useUpdateMeetingDetails } from "../services/mutation";
+import { useUpdateLead, useUpdateMeetingDetails } from "../services/mutation";
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { useToast } from "../hooks/use-toast";
@@ -54,6 +54,14 @@ import CreateTask from "../components/modals/create-task";
 import NoteForm from "../components/modals/create-note";
 import VisitCard from "../components/visit/visit-card";
 import TaskCard from "../components/task/task-card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
+import { LEAD_STATUS_LIST, TabName } from "../utils/constants";
 
 export default function LeadDetail() {
   const [location] = useLocation();
@@ -101,6 +109,27 @@ export default function LeadDetail() {
         toast({
           title: "Task Added",
           description: "Your task has been successfully created.",
+        });
+      },
+    },
+  });
+
+  const { mutate: updateLead } = useUpdateLead({
+    options: {
+      onError: (data) => {
+        toast({
+          title: "Error",
+          description:
+            "Something went wrong. Please try again." + JSON.stringify(data),
+        });
+      },
+      onSuccess: () => {
+        refetchLead();
+        setTaskDialogOpen(false);
+
+        toast({
+          title: "Updated",
+          description: "Your lead status has been successfully.",
         });
       },
     },
@@ -170,6 +199,11 @@ export default function LeadDetail() {
     };
   }, [visit, action]);
 
+  const updateLeadStatus = (value: string) => {
+    // @ts-ignore
+    updateLead({ name: leadId, lead_status: value });
+  };
+
   const handleVisitAction = (
     visit: VisitDetailsType,
     action: "check_in" | "completed"
@@ -204,6 +238,8 @@ export default function LeadDetail() {
     );
   }
 
+  console.log("this is called ----- ", lead?.lead_status);
+
   return (
     <PageContainer>
       {/* Back Button */}
@@ -221,14 +257,22 @@ export default function LeadDetail() {
         <div className="space-y-3">
           {/* Status Tags */}
           <div className="flex flex-wrap gap-2">
-            <Badge
-              variant={
-                lead.status === "Do Not Contact" ? "destructive" : "secondary"
-              }
-              className="rounded-sm"
+            <Select
+              value={lead?.lead_status || ""}
+              onValueChange={(value) => updateLeadStatus(value)}
+              key={lead?.lead_status}
             >
-              🔴 {lead.status}
-            </Badge>
+              <SelectTrigger className="inline-flex items-center border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 text-foreground rounded-sm w-fit">
+                <SelectValue placeholder="Select status" />
+              </SelectTrigger>
+              <SelectContent>
+                {LEAD_STATUS_LIST.map((status) => (
+                  <SelectItem key={status} value={status}>
+                    {status}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             {lead.qualification_status && (
               <Badge variant="outline" className="rounded-sm">
                 🟡 {lead.qualification_status}
