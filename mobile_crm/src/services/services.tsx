@@ -254,3 +254,30 @@ export const postToggleLeadLike = <
     });
   };
 };
+
+export const getReportViewList =
+  <TData,>({
+    doctype,
+    filters,
+    or_filters,
+    limit_page_length = 10,
+  }: {
+    doctype: string;
+    filters: unknown[];
+    or_filters?: unknown[];
+    limit_page_length?: number;
+  }): (() => Promise<TData>) =>
+  () =>
+    requestWrapper<TData>({
+      url: API_END_POINTS.reportView,
+      method: "GET",
+      params: {
+        doctype,
+        fields: JSON.stringify(["*"]),
+        filters: JSON.stringify(filters),
+        or_filters: JSON.stringify(or_filters),
+        page_length: limit_page_length,
+        view: "List",
+        with_comment_count: 1,
+      },
+    });
