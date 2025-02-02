@@ -12,22 +12,21 @@ import { Input } from "../ui/input";
 import { useState } from "react";
 import { format } from "date-fns";
 import { useFetchLeadDetails } from "../../services/query";
-import { useLocation } from "wouter";
 import { useToast } from "../../hooks/use-toast";
 import { useSubmitMeetingDetails } from "../../services/mutation";
 
 interface ScheduleMeetingModalProps {
   isOpen: boolean;
   onClose: () => void;
+  leadId: string;
 }
 
 export default function ScheduleMeetingModal({
   isOpen,
   onClose,
+  leadId,
 }: ScheduleMeetingModalProps) {
-  const [location] = useLocation();
   const { toast } = useToast();
-  const leadId = location.split("/").pop();
   const { data: leadDetails } = useFetchLeadDetails({
     lead_id: leadId!,
     options: { enabled: !!leadId },

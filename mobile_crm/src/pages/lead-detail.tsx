@@ -4,7 +4,6 @@ import { SiWhatsapp } from "react-icons/si";
 import { Card } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
-import { Textarea } from "../components/ui/textarea";
 import PageContainer from "../components/layout/page-container";
 import {
   Tabs,
@@ -22,11 +21,9 @@ import {
   Edit,
   MapPin,
   Clock,
-  CalendarIcon,
 } from "lucide-react";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogHeader,
   DialogOverlay,
@@ -45,12 +42,8 @@ import {
   VisitDetailsType,
   PostVisitDetailsType,
 } from "../types/types";
-import {
-  useSubmitNoteDetails,
-  useUpdateMeetingDetails,
-} from "../services/mutation";
+import { useUpdateMeetingDetails } from "../services/mutation";
 import { useEffect, useState } from "react";
-import { cn } from "../lib/utils";
 import { format } from "date-fns";
 import { useToast } from "../hooks/use-toast";
 import { NoteCard } from "../components/modals/note-details";
@@ -58,6 +51,9 @@ import { TaskModal } from "../components/modals/task-details";
 import { LoadingButton } from "../components/ui/loading-button";
 import ScheduleMeetingModal from "../components/modals/schedule-meeting";
 import CreateTask from "../components/modals/create-task";
+import NoteForm from "../components/modals/create-note";
+import VisitCard from "../components/visit/visit-card";
+import TaskCard from "../components/task/task-card";
 
 export default function LeadDetail() {
   const [location] = useLocation();
@@ -68,15 +64,13 @@ export default function LeadDetail() {
   );
 
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
+  const [isCreateNoteModalOpen, setIsCreateNoteModalOpen] = useState(false);
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<ToDoType | null>(null);
   const [visitDialogOpen, setVisitDialogOpen] = useState(false);
   const [taskDialogOpen, setTaskDialogOpen] = useState(false);
   const [isMeetingModalOpen, setIsMeetingModalOpen] = useState(false);
-  const [isVisitUpdate, setIsVisitUpdate] = useState(false);
-
-  const [note, setNote] = useState("");
 
   const { data: leadDetails, refetch: refetchLead } = useFetchLeadDetails({
     lead_id: leadId!,
@@ -89,24 +83,6 @@ export default function LeadDetail() {
   const { data: taskList, refetch: refetchTask } = useFetchTaskList({
     lead_id: leadId!,
     options: { enabled: !!leadId },
-  });
-
-  const { mutate: submitNote } = useSubmitNoteDetails({
-    options: {
-      onError: () => {
-        toast({
-          title: "Error",
-          description: "Something went wrong. Please try again.",
-        });
-      },
-      onSuccess: () => {
-        refetchLead();
-        toast({
-          title: "Note Added",
-          description: "Your note has been successfully created.",
-        });
-      },
-    },
   });
 
   const { mutate: updateMeeting } = useUpdateMeetingDetails({
@@ -208,20 +184,6 @@ export default function LeadDetail() {
         window?.getLocationFromApp?.();
       }, 100);
     }
-  };
-
-  const handleAddNote = async () => {
-    await submitNote({
-      note: note,
-      added_by: "Administrator",
-      added_on: format(new Date(), "yyyy-MM-dd HH:mm:ss.SSSSSS"),
-      parent: leadDetails?.data.name || "",
-      parentfield: "notes",
-      parenttype: "Lead",
-      doctype: "CRM Note",
-    });
-
-    setNote("");
   };
 
   if (!lead) {
@@ -462,40 +424,14 @@ export default function LeadDetail() {
             <div className="space-y-3">
               {taskList?.data && taskList?.data.length > 0 ? (
                 taskList.data.map((task) => (
-                  <div
+                  <TaskCard
+                    task={task}
                     key={task.name}
-                    className="flex items-center justify-between pb-2 border-b cursor-pointer last:border-0"
                     onClick={() => {
                       setIsTaskModalOpen(true);
                       setSelectedTask(task);
                     }}
-                  >
-                    <div>
-                      {(!!task.custom_type_of_activity && (
-                        <p className="w-full text-sm font-medium">
-                          {task.custom_type_of_activity}
-                        </p>
-                      )) ||
-                        (task.description && (
-                          <div
-                            dangerouslySetInnerHTML={{
-                              __html: task.description,
-                            }}
-                          />
-                        ))}
-                      <p className="text-xs text-muted-foreground">
-                        Due: {format(new Date(task.date), "dd MMM, yyyy")}
-                      </p>
-                    </div>
-                    <Badge
-                      variant={
-                        task.status === "completed" ? "secondary" : "outline"
-                      }
-                      className="rounded-sm"
-                    >
-                      {task.status}
-                    </Badge>
-                  </div>
+                  />
                 ))
               ) : (
                 <p className="text-sm text-center text-muted-foreground">
@@ -541,52 +477,14 @@ export default function LeadDetail() {
             <div className="space-y-3">
               {visitList?.data && visitList?.data.length > 0 ? (
                 visitList.data.map((visit) => (
-                  <div
+                  <VisitCard
                     key={visit.name}
-                    className={cn(
-                      "flex items-center justify-between border-b pb-2 last:border-0",
-                      visit.status !== "completed" &&
-                        "cursor-pointer hover:bg-accent/50 p-2 rounded-lg -mx-2"
-                    )}
                     onClick={() => {
-                      if (visit.status !== "completed") {
-                        setSelectedVisit(visit);
-                        setVisitDialogOpen(true);
-                      }
+                      setSelectedVisit(visit);
+                      setVisitDialogOpen(true);
                     }}
-                  >
-                    <div>
-                      <p className="text-sm font-medium">
-                        {visit.custom_purpose}
-                      </p>
-                      {!!visit.custom_location_area && (
-                        <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
-                          <MapPin className="w-3 h-3" />
-                          {visit.custom_location_area}
-                        </div>
-                      )}
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <CalendarIcon className="w-3 h-3" />
-                        {format(
-                          new Date(visit.creation),
-                          "dd MMM, yyyy"
-                        )} at {visit.time_hrs}:{visit.time_mins}{" "}
-                        {visit.time_format}
-                      </div>
-                    </div>
-                    <Badge
-                      variant={
-                        visit.status === "completed"
-                          ? "secondary"
-                          : visit.status === "in_progress"
-                          ? "default"
-                          : "outline"
-                      }
-                      className="rounded-sm"
-                    >
-                      {visit.status}
-                    </Badge>
-                  </div>
+                    visit={visit}
+                  />
                 ))
               ) : (
                 <p className="text-sm text-center text-muted-foreground">
@@ -650,7 +548,6 @@ export default function LeadDetail() {
                       selectedVisit &&
                       handleVisitAction(selectedVisit, "check_in")
                     }
-                    loading={isVisitUpdate}
                   >
                     Check In
                   </LoadingButton>
@@ -663,7 +560,6 @@ export default function LeadDetail() {
                       selectedVisit &&
                       handleVisitAction(selectedVisit, "completed")
                     }
-                    loading={isVisitUpdate}
                   >
                     Mark as Completed
                   </LoadingButton>
@@ -685,40 +581,15 @@ export default function LeadDetail() {
           <ClipboardList className="w-4 h-4 mr-2" />
           Task
         </Button>
-
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button
-              size="sm"
-              variant="secondary"
-              className="rounded-md shadow-lg"
-            >
-              <StickyNote className="w-4 h-4 mr-2" />
-              Note
-            </Button>
-          </DialogTrigger>
-          <DialogPortal>
-            <DialogOverlay className="bg-[#00000056] backdrop-blur-sm" />
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Add Note</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4">
-                <Textarea
-                  placeholder="Type your note..."
-                  className="min-h-[100px]"
-                  value={note}
-                  onChange={(e) => setNote(e.target.value)}
-                />
-                <div className="flex justify-end">
-                  <DialogClose>
-                    <Button onClick={handleAddNote}>Add Note</Button>
-                  </DialogClose>
-                </div>
-              </div>
-            </DialogContent>
-          </DialogPortal>
-        </Dialog>
+        <Button
+          size="sm"
+          variant="secondary"
+          className="rounded-md shadow-lg"
+          onClick={() => setIsCreateNoteModalOpen(true)}
+        >
+          <StickyNote className="w-4 h-4 mr-2" />
+          Note
+        </Button>
 
         <Button
           size="sm"
@@ -741,12 +612,22 @@ export default function LeadDetail() {
         }}
       />
 
+      <NoteForm
+        isOpen={isCreateNoteModalOpen}
+        onClose={() => {
+          setIsCreateNoteModalOpen(false);
+          refetchLead();
+        }}
+        leadId={leadId}
+      />
+
       <ScheduleMeetingModal
         isOpen={isMeetingModalOpen}
         onClose={() => {
           setIsMeetingModalOpen(false);
           refetchVisit();
         }}
+        leadId={leadId || ""}
       />
 
       <TaskModal

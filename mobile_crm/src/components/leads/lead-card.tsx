@@ -1,39 +1,38 @@
 import { Card } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { Badge } from "../../components/ui/badge";
-import { Mail, Phone, MessageSquare, CheckSquare } from "lucide-react";
+import { Mail, Phone, MessageSquare, CheckSquare, MapPin } from "lucide-react";
 import { SiWhatsapp } from "react-icons/si";
 import { Link } from "wouter";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "../../components/ui/dialog";
-import { Textarea } from "../../components/ui/textarea";
-import { Input } from "../../components/ui/input";
 import { LeadType } from "../../types/types";
+import { useState } from "react";
+import NoteForm from "../modals/create-note";
+import CreateTask from "../modals/create-task";
+import ScheduleMeetingModal from "../modals/schedule-meeting";
 
 export default function LeadCard({ lead }: { lead: LeadType }) {
-  const renderBadge = () => {
-    return (
-      <Badge
-        variant={
-          lead.lead_status === "Do Not Contact" ? "destructive" : "secondary"
-        }
-        className="text-xs px-2 py-0.5 rounded-sm"
-      >
-        {lead.lead_status}
-      </Badge>
-    );
-  };
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const [isVisitModalOpen, setIsVisitModalOpen] = useState(false);
+  const [isMeetingModalOpen, setIsMeetingModalOpen] = useState(false);
 
   return (
     <Link href={`/mobile_crm/leads/${lead.name}`}>
       <Card className="p-3 transition-all duration-200 cursor-pointer hover:shadow-md">
         {/* Badge */}
-        <div className="mb-2">{renderBadge()}</div>
+        <div className="mb-2">
+          {!!lead?.lead_status && (
+            <Badge
+              variant={
+                lead.lead_status === "Do Not Contact"
+                  ? "destructive"
+                  : "secondary"
+              }
+              className="text-xs px-2 py-0.5 rounded-sm"
+            >
+              {lead.lead_status}
+            </Badge>
+          )}
+        </div>
 
         {/* Lead Info */}
         <div className="space-y-1">
@@ -97,59 +96,55 @@ export default function LeadCard({ lead }: { lead: LeadType }) {
               <SiWhatsapp className="h-3.5 w-3.5" />
             </Button>
           )}
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-7 w-7"
-                title="Add Note"
-              >
-                <MessageSquare className="h-3.5 w-3.5" />
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Add Note</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4">
-                <Textarea
-                  placeholder="Type your note..."
-                  className="min-h-[100px]"
-                />
-                <div className="flex justify-end">
-                  <Button>Add Note</Button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-7 w-7"
-                title="Add Task"
-              >
-                <CheckSquare className="h-3.5 w-3.5" />
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Add Task</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4">
-                <Input placeholder="Task title" />
-                <div className="grid grid-cols-2 gap-2">
-                  <Input type="date" />
-                  <Input type="time" />
-                </div>
-                <div className="flex justify-end">
-                  <Button>Add Task</Button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7"
+            title="Add Note"
+            onClick={() => setIsTaskModalOpen(true)}
+          >
+            <MessageSquare className="h-3.5 w-3.5" />
+          </Button>
+
+          <NoteForm
+            isOpen={isTaskModalOpen}
+            onClose={() => setIsTaskModalOpen(false)}
+            leadId={lead.name}
+            key={lead.name}
+          />
+
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7"
+            title="Add Task"
+            onClick={() => setIsVisitModalOpen(true)}
+          >
+            <CheckSquare className="h-3.5 w-3.5" />
+          </Button>
+
+          <CreateTask
+            isOpen={isVisitModalOpen}
+            onClose={() => setIsVisitModalOpen(false)}
+            leadId={lead.name}
+            key={lead.name}
+          />
+
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7"
+            title="Add Note"
+            onClick={() => setIsMeetingModalOpen(true)}
+          >
+            <MapPin className="h-3.5 w-3.5" />
+          </Button>
+
+          <ScheduleMeetingModal
+            isOpen={isMeetingModalOpen}
+            onClose={() => setIsMeetingModalOpen(false)}
+            leadId={lead?.name}
+          />
         </div>
       </Card>
     </Link>

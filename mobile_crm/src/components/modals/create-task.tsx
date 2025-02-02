@@ -44,7 +44,7 @@ export default function CreateTask({
     },
   });
 
-  const { mutate: submitTask } = useSubmitTaskDetails({
+  const { mutate: submitTask, isLoading } = useSubmitTaskDetails({
     options: {
       onError: () => {
         toast({
@@ -78,6 +78,11 @@ export default function CreateTask({
     });
   };
 
+  const handleClose = () => {
+    reset();
+    onClose();
+  };
+
   useEffect(() => {
     if (!leadId) {
       toast({
@@ -95,7 +100,7 @@ export default function CreateTask({
           <DialogHeader>
             <DialogTitle>Add Task</DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleSubmit(onSubmit)} className="pt-4 space-y-4">
+          <form className="pt-4 space-y-4">
             <div className="space-y-2">
               <label className="text-sm font-medium">Task Title</label>
               <Input
@@ -133,10 +138,21 @@ export default function CreateTask({
               </div>
             </div>
             <div className="flex justify-end gap-2 pt-2">
-              <Button type="button" variant="outline" onClick={onClose}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleClose}
+                disabled={isLoading}
+              >
                 Cancel
               </Button>
-              <Button type="submit">Add Task</Button>
+              <Button
+                type="submit"
+                onClick={handleSubmit(onSubmit)}
+                disabled={isLoading}
+              >
+                Add Task
+              </Button>
             </div>
           </form>
         </DialogContent>
