@@ -238,8 +238,6 @@ export default function LeadDetail() {
     );
   }
 
-  console.log("this is called ----- ", lead?.lead_status);
-
   return (
     <PageContainer>
       {/* Back Button */}

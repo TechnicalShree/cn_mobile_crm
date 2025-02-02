@@ -593,6 +593,8 @@ export interface PostLeadType {
   email_id: string;
   custom_budget_range: string;
   name?: string;
+  status?: string;
+  lead_status?: string;
 }
 
 // Employee Details....

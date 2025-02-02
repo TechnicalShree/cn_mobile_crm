@@ -41,7 +41,7 @@ interface LeadModalProps {
 
 export function LeadForm({ isOpen, onClose }: LeadModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { mutate } = useCreateLead({
+  const { mutate, isLoading } = useCreateLead({
     options: {
       onError: () => {
         toast({
@@ -76,6 +76,8 @@ export function LeadForm({ isOpen, onClose }: LeadModalProps) {
     setIsSubmitting(true);
     try {
       mutate({
+        status: "Open",
+        lead_status: "Open",
         first_name: data.firstName,
         mobile_no: data.mobileNo,
         email_id: data.customerEmail,
@@ -187,7 +189,7 @@ export function LeadForm({ isOpen, onClose }: LeadModalProps) {
                 <Button
                   type="submit"
                   className="w-full"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || isLoading}
                 >
                   {isSubmitting ? "Submitting..." : "Submit"}
                 </Button>
