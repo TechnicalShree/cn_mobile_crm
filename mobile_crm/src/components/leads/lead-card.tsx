@@ -7,14 +7,13 @@ import { Link } from "wouter";
 import { LeadType } from "../../types/types";
 import { useState } from "react";
 import NoteForm from "../modals/create-note";
-import CreateTask from "../modals/create-task";
-import ScheduleMeetingModal from "../modals/schedule-meeting";
+// import CreateTask from "../modals/create-task";
+// import ScheduleMeetingModal from "../modals/schedule-meeting";
 
 export default function LeadCard({ lead }: { lead: LeadType }) {
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
-  const [isVisitModalOpen, setIsVisitModalOpen] = useState(false);
-  const [isMeetingModalOpen, setIsMeetingModalOpen] = useState(false);
-  console.log("-----sdf---sdf-w--e-", isNoteModalOpen);
+  // const [isVisitModalOpen, setIsVisitModalOpen] = useState(false);
+  // const [isMeetingModalOpen, setIsMeetingModalOpen] = useState(false);
 
   return (
     <Link href={`/mobile_crm/leads/${lead.name}`}>
@@ -113,27 +112,43 @@ export default function LeadCard({ lead }: { lead: LeadType }) {
               setIsNoteModalOpen(false);
             }}
             leadId={lead.name}
-            key={`${lead.name}_${isNoteModalOpen}`}
           />
 
-          <Button
+          <Link
+            className="flex items-center justify-center h-7 w-7"
+            to={`/mobile_crm/leads/${lead.name}?opened_modal=create_visit`}
+          >
+            <CheckSquare className="h-3.5 w-3.5" />
+          </Link>
+
+          {/* <Button
             variant="ghost"
             size="icon"
             className="h-7 w-7"
             title="Add Task"
-            onClick={() => setIsVisitModalOpen(true)}
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(
+                `/mobile_crm/leads/${lead.name}?opened_modal=create_visit`
+              );
+            }}
           >
             <CheckSquare className="h-3.5 w-3.5" />
-          </Button>
-
+          </Button> 
+          
           <CreateTask
             isOpen={isVisitModalOpen}
             onClose={() => setIsVisitModalOpen(false)}
             leadId={lead.name}
-            key={lead.name}
-          />
+            /> */}
 
-          <Button
+          <Link
+            className="flex items-center justify-center h-7 w-7"
+            to={`/mobile_crm/leads/${lead.name}?opened_modal=create_meeting`}
+          >
+            <MapPin className="h-3.5 w-3.5" />
+          </Link>
+          {/* <Button
             variant="ghost"
             size="icon"
             className="h-7 w-7"
@@ -147,7 +162,7 @@ export default function LeadCard({ lead }: { lead: LeadType }) {
             isOpen={isMeetingModalOpen}
             onClose={() => setIsMeetingModalOpen(false)}
             leadId={lead?.name}
-          />
+          /> */}
         </div>
       </Card>
     </Link>

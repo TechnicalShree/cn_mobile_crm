@@ -23,6 +23,8 @@ const requestWrapper = async <TResponse>({
   ...rest
 }: RequestWrapperType): Promise<TResponse> => {
   try {
+    // alert(document.cookie);
+    // alert(window?.csrf_token);
     const data = await axios({
       method: method,
       url: url,

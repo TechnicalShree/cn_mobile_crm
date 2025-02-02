@@ -92,6 +92,7 @@ export default function Leads() {
     };
 
     // Add filters based on the provided conditions
+    // addFilter("order_by", "=", "creation desc");
     addFilter("lead_status", "=", filters.status);
     addFilter("territory", "=", filters.territory);
     addFilter(

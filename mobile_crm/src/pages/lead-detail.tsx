@@ -1,8 +1,7 @@
-import { Link } from "wouter";
+import { Link, useSearchParams } from "wouter";
 import { useLocation } from "wouter";
 import { SiWhatsapp } from "react-icons/si";
 import { Card } from "../components/ui/card";
-import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
 import PageContainer from "../components/layout/page-container";
 import {
@@ -61,10 +60,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
-import { LEAD_STATUS_LIST, TabName } from "../utils/constants";
+import { LEAD_STATUS_LIST } from "../utils/constants";
 
 export default function LeadDetail() {
   const [location] = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { toast } = useToast();
   const leadId = location.split("/").pop();
   const [selectedVisit, setSelectedVisit] = useState<VisitDetailsType | null>(
@@ -108,7 +108,7 @@ export default function LeadDetail() {
 
         toast({
           title: "Task Added",
-          description: "Your task has been successfully created.",
+          description: "Your meeting has been successfully updated.",
         });
       },
     },
@@ -129,7 +129,7 @@ export default function LeadDetail() {
 
         toast({
           title: "Updated",
-          description: "Your lead status has been successfully.",
+          description: "Your lead status has been successfully updated.",
         });
       },
     },
@@ -199,6 +199,15 @@ export default function LeadDetail() {
     };
   }, [visit, action]);
 
+  useEffect(() => {
+    const openedModal = searchParams.get("opened_modal");
+    if (openedModal === "create_visit") {
+      setTaskDialogOpen(true);
+    } else if (openedModal === "create_meeting") {
+      setIsMeetingModalOpen(true);
+    }
+  }, [searchParams]);
+
   const updateLeadStatus = (value: string) => {
     // @ts-ignore
     updateLead({ name: leadId, lead_status: value });
@@ -218,6 +227,14 @@ export default function LeadDetail() {
         window?.getLocationFromApp?.();
       }, 100);
     }
+  };
+
+  const handleDeleteModalSearchParam = () => {
+    setSearchParams((prev) => {
+      const newParams = new URLSearchParams(prev);
+      newParams.delete("opened_modal");
+      return newParams.toString();
+    });
   };
 
   if (!lead) {
@@ -271,16 +288,16 @@ export default function LeadDetail() {
                 ))}
               </SelectContent>
             </Select>
-            {lead.qualification_status && (
+            {/* {lead.qualification_status && (
               <Badge variant="outline" className="rounded-sm">
                 🟡 {lead.qualification_status}
               </Badge>
-            )}
-            {lead.territory && (
+            )} */}
+            {/* {lead.territory && (
               <Badge variant="outline" className="rounded-sm">
                 🌍 {lead.territory}
               </Badge>
-            )}
+            )} */}
           </div>
 
           {/* Name and Company */}
@@ -651,14 +668,15 @@ export default function LeadDetail() {
         onClose={() => {
           refetchTask();
           setTaskDialogOpen(false);
+          handleDeleteModalSearchParam();
         }}
       />
 
       <NoteForm
         isOpen={isCreateNoteModalOpen}
         onClose={() => {
-          setIsCreateNoteModalOpen(false);
           refetchLead();
+          setIsCreateNoteModalOpen(false);
         }}
         leadId={leadId}
       />
@@ -666,8 +684,9 @@ export default function LeadDetail() {
       <ScheduleMeetingModal
         isOpen={isMeetingModalOpen}
         onClose={() => {
-          setIsMeetingModalOpen(false);
           refetchVisit();
+          setIsMeetingModalOpen(false);
+          handleDeleteModalSearchParam();
         }}
         leadId={leadId || ""}
       />
