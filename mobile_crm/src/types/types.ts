@@ -58,7 +58,7 @@ export type PostToDoType = {
   reference_name: string;
   role?: null;
   assigned_by: null | string;
-  assigned_by_full_name: null | string;
+  assigned_by_full_name?: null | string;
   sender?: null;
   assignment_rule?: null;
 };

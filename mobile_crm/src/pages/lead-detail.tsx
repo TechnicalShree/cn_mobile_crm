@@ -3,7 +3,6 @@ import { useLocation } from "wouter";
 import { SiWhatsapp } from "react-icons/si";
 import { Card } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
-import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
 import { Textarea } from "../components/ui/textarea";
 import PageContainer from "../components/layout/page-container";
@@ -48,9 +47,7 @@ import {
 } from "../types/types";
 import {
   useSubmitNoteDetails,
-  useSubmitTaskDetails,
   useUpdateMeetingDetails,
-  useSubmitMeetingDetails,
 } from "../services/mutation";
 import { useEffect, useState } from "react";
 import { cn } from "../lib/utils";
@@ -59,7 +56,8 @@ import { useToast } from "../hooks/use-toast";
 import { NoteCard } from "../components/modals/note-details";
 import { TaskModal } from "../components/modals/task-details";
 import { LoadingButton } from "../components/ui/loading-button";
-import VisitDetailModal from "../components/modals/visit-details";
+import ScheduleMeetingModal from "../components/modals/schedule-meeting";
+import CreateTask from "../components/modals/create-task";
 
 export default function LeadDetail() {
   const [location] = useLocation();
@@ -75,29 +73,8 @@ export default function LeadDetail() {
   const [selectedTask, setSelectedTask] = useState<ToDoType | null>(null);
   const [visitDialogOpen, setVisitDialogOpen] = useState(false);
   const [taskDialogOpen, setTaskDialogOpen] = useState(false);
+  const [isMeetingModalOpen, setIsMeetingModalOpen] = useState(false);
   const [isVisitUpdate, setIsVisitUpdate] = useState(false);
-  const [taskTitle, setTaskTitle] = useState("");
-  const [taskDate, setTaskDate] = useState("");
-  const [taskTime, setTaskTime] = useState("");
-
-  const [scheduleMeetingForm, setScheduleMeetingForm] = useState({
-    purpose: {
-      value: "",
-      error: false,
-    },
-    date: {
-      value: new Date().toISOString().split("T")[0],
-      error: false,
-    },
-    time: {
-      value: "",
-      error: false,
-    },
-    location_area: {
-      value: "",
-      error: false,
-    },
-  });
 
   const [note, setNote] = useState("");
 
@@ -127,89 +104,6 @@ export default function LeadDetail() {
         toast({
           title: "Note Added",
           description: "Your note has been successfully created.",
-        });
-      },
-    },
-  });
-
-  const { mutate: submitTask } = useSubmitTaskDetails({
-    options: {
-      onError: () => {
-        toast({
-          title: "Error",
-          description: "Something went wrong. Please try again.",
-        });
-      },
-      onSuccess: () => {
-        refetchTask();
-
-        setTaskTitle("");
-        setTaskDate("");
-        setTaskTime("");
-        setTaskDialogOpen(false);
-
-        toast({
-          title: "Task Added",
-          description: "Your task has been successfully created.",
-        });
-      },
-    },
-  });
-
-  const { mutate: submitMeeting } = useSubmitMeetingDetails({
-    options: {
-      onError: (data) => {
-        toast({
-          title: "Error",
-          description:
-            "Something went wrong. Please try again." + JSON.stringify(data),
-        });
-        setScheduleMeetingForm({
-          purpose: {
-            value: "",
-            error: false,
-          },
-          date: {
-            value: new Date().toISOString().split("T")[0],
-            error: false,
-          },
-          time: {
-            value: "",
-            error: false,
-          },
-          location_area: {
-            value: "",
-            error: false,
-          },
-        });
-        setTaskDialogOpen(false);
-      },
-      onSuccess: () => {
-        refetchVisit();
-
-        setScheduleMeetingForm({
-          purpose: {
-            value: "",
-            error: false,
-          },
-          date: {
-            value: new Date().toISOString().split("T")[0],
-            error: false,
-          },
-          time: {
-            value: "",
-            error: false,
-          },
-          location_area: {
-            value: "",
-            error: false,
-          },
-        });
-        setTaskDialogOpen(false);
-
-        toast({
-          title: "Task Added",
-          description: "Your task has been successfully created.",
         });
       },
     },
@@ -316,28 +210,6 @@ export default function LeadDetail() {
     }
   };
 
-  const handleScheduleMeeting = () => {
-    const timeValue = scheduleMeetingForm.time.value;
-
-    // Split the time into hours and minutes
-    const [hours, minutes] = timeValue.split(":").map(Number);
-
-    // Determine AM/PM and convert hours to 12-hour format
-    const timeFormat = hours >= 12 ? "PM" : "AM";
-    const hours12 = hours % 12 || 12; // Convert 0 or 24 to 12 for 12-hour clock
-
-    submitMeeting({
-      date: format(new Date(scheduleMeetingForm.date.value), "yyyy-MM-dd"),
-      lead: leadDetails?.data.name || "",
-      custom_location_area: scheduleMeetingForm.location_area.value,
-      custom_purpose: scheduleMeetingForm.purpose.value,
-      time_format: timeFormat,
-      time_hrs: hours12,
-      time_mins: minutes,
-      status: "Visit Scheduled",
-    });
-  };
-
   const handleAddNote = async () => {
     await submitNote({
       note: note,
@@ -350,49 +222,6 @@ export default function LeadDetail() {
     });
 
     setNote("");
-  };
-
-  const handleAddTask = () => {
-    submitTask({
-      custom_type_of_activity: taskTitle,
-      date: format(new Date(taskDate), "yyyy-MM-dd"),
-      custom_due_datetime: format(
-        new Date(taskDate + " " + taskTime),
-        "yyyy-MM-dd HH:mm:ss.SSSSSS"
-      ),
-      reference_name: leadDetails?.data.name || "",
-      reference_type: "Lead",
-      description: taskTitle,
-      assigned_by: "Administrator",
-      assigned_by_full_name: "Administrator",
-    });
-
-    setTaskTitle("");
-    setTaskDate("");
-    setTaskTime("");
-  };
-
-  const handleScheduleMeetingFormChange = (
-    key: keyof typeof scheduleMeetingForm,
-    value: unknown
-  ) => {
-    // if (key === "date") {
-    //   setScheduleMeetingForm((prevForm) => ({
-    //     ...prevForm,
-    //     [key]: {
-    //       error: false,
-    //       value: new Date((value as Dayjs).format("YYYY-MM-DD")),
-    //     },
-    //   }));
-    // } else {
-    setScheduleMeetingForm((prevForm) => ({
-      ...prevForm,
-      [key]: {
-        error: false,
-        value,
-      },
-    }));
-    // }
   };
 
   if (!lead) {
@@ -845,55 +674,6 @@ export default function LeadDetail() {
         </DialogPortal>
       </Dialog>
 
-      {/* Task Dialog */}
-      <Dialog open={taskDialogOpen} onOpenChange={setTaskDialogOpen}>
-        <DialogPortal>
-          <DialogOverlay className="bg-[#00000056] backdrop-blur-sm" />
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add Task</DialogTitle>
-            </DialogHeader>
-            <div className="pt-4 space-y-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Task Title</label>
-                <Input
-                  placeholder="Enter task title"
-                  value={taskTitle}
-                  onChange={(e) => setTaskTitle(e.target.value)}
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Date</label>
-                  <Input
-                    type="date"
-                    value={taskDate}
-                    onChange={(e) => setTaskDate(e.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Time</label>
-                  <Input
-                    type="time"
-                    value={taskTime}
-                    onChange={(e) => setTaskTime(e.target.value)}
-                  />
-                </div>
-              </div>
-              <div className="flex justify-end gap-2 pt-2">
-                <Button
-                  variant="outline"
-                  onClick={() => setTaskDialogOpen(false)}
-                >
-                  Cancel
-                </Button>
-                <Button onClick={handleAddTask}>Add Task</Button>
-              </div>
-            </div>
-          </DialogContent>
-        </DialogPortal>
-      </Dialog>
-
       {/* Floating Action Buttons */}
       <div className="fixed flex gap-2 bottom-4 right-4">
         <Button
@@ -940,138 +720,65 @@ export default function LeadDetail() {
           </DialogPortal>
         </Dialog>
 
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button
-              size="sm"
-              variant="default"
-              className="rounded-md shadow-lg"
-            >
-              <MapPin className="w-4 h-4 mr-2" />
-              Meeting
-            </Button>
-          </DialogTrigger>
-          <DialogPortal>
-            <DialogOverlay className="bg-[#00000056] backdrop-blur-sm" />
-            <DialogContent>
-              <DialogHeader className="z-50">
-                <DialogTitle>Schedule Meeting</DialogTitle>
-              </DialogHeader>
-              <div className="z-50 pt-4 space-y-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Purpose</label>
-                  <Input
-                    value={scheduleMeetingForm.purpose.value}
-                    onChange={(e) =>
-                      handleScheduleMeetingFormChange("purpose", e.target.value)
-                    }
-                    placeholder="Meeting purpose (e.g. Product Demo, Service Follow-up)"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Date</label>
-                  <Input
-                    type="date"
-                    value={scheduleMeetingForm.date.value}
-                    onChange={(e) =>
-                      handleScheduleMeetingFormChange("date", e.target.value)
-                    }
-                    min={new Date().toISOString().split("T")[0]}
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Time</label>
-                    <div className="w-full">
-                      <Input
-                        value={scheduleMeetingForm.time.value}
-                        onChange={(e) =>
-                          handleScheduleMeetingFormChange(
-                            "time",
-                            e.target.value
-                          )
-                        }
-                        type="time"
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Location</label>
-                    <Input
-                      value={scheduleMeetingForm.location_area.value}
-                      onChange={(e) =>
-                        handleScheduleMeetingFormChange(
-                          "location_area",
-                          e.target.value
-                        )
-                      }
-                      placeholder="Enter location"
-                    />
-                  </div>
-                </div>
-                <div className="flex justify-end gap-2 pt-2">
-                  <DialogClose>
-                    <Button
-                      variant="outline"
-                      onClick={() => {
-                        setScheduleMeetingForm({
-                          purpose: { value: "", error: false },
-                          date: {
-                            value: new Date().toISOString().split("T")[0],
-                            error: false,
-                          },
-                          time: { value: "", error: false },
-                          location_area: { value: "", error: false },
-                        });
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                  </DialogClose>
-                  <DialogClose>
-                    <Button onClick={handleScheduleMeeting}>
-                      Schedule Meeting
-                    </Button>
-                  </DialogClose>
-                </div>
-              </div>
-            </DialogContent>
-          </DialogPortal>
-        </Dialog>
-
-        <TaskModal
-          isOpen={isTaskModalOpen}
-          onClose={() => {
-            setIsTaskModalOpen(false);
-            refetchTask();
-          }}
-          task={{
-            name: selectedTask?.name || "",
-            title: selectedTask?.custom_type_of_activity || "",
-            dueDate: selectedTask?.date
-              ? `Due: ${format(
-                  new Date(selectedTask?.date || ""),
-                  "dd MMM, yyyy"
-                )}`
-              : "",
-            status: selectedTask?.status || "",
-            description: selectedTask?.description || "",
-          }}
-        />
-
-        {selectedNote && (
-          <NoteCard
-            isOpen={isNoteModalOpen}
-            onClose={() => {
-              setIsNoteModalOpen(false);
-              refetchLead();
-            }}
-            noteDetails={selectedNote}
-          />
-        )}
+        <Button
+          size="sm"
+          variant="default"
+          className="rounded-md shadow-lg"
+          onClick={() => setIsMeetingModalOpen(true)}
+        >
+          <MapPin className="w-4 h-4 mr-2" />
+          Meeting
+        </Button>
       </div>
+
+      {/* Task Dialog */}
+      <CreateTask
+        leadId={leadId}
+        isOpen={taskDialogOpen}
+        onClose={() => {
+          refetchTask();
+          setTaskDialogOpen(false);
+        }}
+      />
+
+      <ScheduleMeetingModal
+        isOpen={isMeetingModalOpen}
+        onClose={() => {
+          setIsMeetingModalOpen(false);
+          refetchVisit();
+        }}
+      />
+
+      <TaskModal
+        isOpen={isTaskModalOpen}
+        onClose={() => {
+          setIsTaskModalOpen(false);
+          refetchTask();
+        }}
+        task={{
+          name: selectedTask?.name || "",
+          title: selectedTask?.custom_type_of_activity || "",
+          dueDate: selectedTask?.date
+            ? `Due: ${format(
+                new Date(selectedTask?.date || ""),
+                "dd MMM, yyyy"
+              )}`
+            : "",
+          status: selectedTask?.status || "",
+          description: selectedTask?.description || "",
+        }}
+      />
+
+      {selectedNote && (
+        <NoteCard
+          isOpen={isNoteModalOpen}
+          onClose={() => {
+            setIsNoteModalOpen(false);
+            refetchLead();
+          }}
+          noteDetails={selectedNote}
+        />
+      )}
     </PageContainer>
   );
 }
