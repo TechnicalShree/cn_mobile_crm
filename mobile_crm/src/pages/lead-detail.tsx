@@ -260,7 +260,7 @@ export default function LeadDetail() {
               onValueChange={(value) => updateLeadStatus(value)}
               key={lead?.lead_status}
             >
-              <SelectTrigger className="inline-flex items-center border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 text-foreground rounded-sm w-fit">
+              <SelectTrigger className="appearance-none h-7 inline-flex items-center border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 text-foreground rounded-sm w-fit">
                 <SelectValue placeholder="Select status" />
               </SelectTrigger>
               <SelectContent>

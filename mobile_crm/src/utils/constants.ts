@@ -9,14 +9,15 @@ export const TabName = {
 };
 
 export const LEAD_STATUS_LIST = [
+  "Hot",
+  "Open",
   "Lead",
   "Warm",
-  "Hot",
   "Cold",
   "Quotation",
-  "Opportunity",
-  "Not Interseted",
   "Closed Won",
   "Closed Lost",
+  "Opportunity",
   "Negotiation",
+  "Not Interseted",
 ];
