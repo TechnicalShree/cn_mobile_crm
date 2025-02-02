@@ -11,9 +11,10 @@ import CreateTask from "../modals/create-task";
 import ScheduleMeetingModal from "../modals/schedule-meeting";
 
 export default function LeadCard({ lead }: { lead: LeadType }) {
-  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
   const [isVisitModalOpen, setIsVisitModalOpen] = useState(false);
   const [isMeetingModalOpen, setIsMeetingModalOpen] = useState(false);
+  console.log("-----sdf---sdf-w--e-", isNoteModalOpen);
 
   return (
     <Link href={`/mobile_crm/leads/${lead.name}`}>
@@ -101,16 +102,18 @@ export default function LeadCard({ lead }: { lead: LeadType }) {
             size="icon"
             className="h-7 w-7"
             title="Add Note"
-            onClick={() => setIsTaskModalOpen(true)}
+            onClick={() => setIsNoteModalOpen(true)}
           >
             <MessageSquare className="h-3.5 w-3.5" />
           </Button>
 
           <NoteForm
-            isOpen={isTaskModalOpen}
-            onClose={() => setIsTaskModalOpen(false)}
+            isOpen={isNoteModalOpen}
+            onClose={() => {
+              setIsNoteModalOpen(false);
+            }}
             leadId={lead.name}
-            key={lead.name}
+            key={`${lead.name}_${isNoteModalOpen}`}
           />
 
           <Button
