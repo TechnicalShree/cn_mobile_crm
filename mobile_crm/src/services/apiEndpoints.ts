@@ -8,6 +8,7 @@ const API_END_POINTS = {
     "/api/method/cn_mobile_crm.api.dashboard_stats.get_lead_analysis_stats",
   updateVisit: "/api/method/cn_mobile_crm.api.lead_details.update_daily_visits",
   updateTask: "/api/method/cn_mobile_crm.api.lead_details.mark_todo_closed",
+  toggleLike: "/api/method/frappe.desk.like.toggle_like",
 
   // Standard Methods
   todoApi: "/api/resource/ToDo",

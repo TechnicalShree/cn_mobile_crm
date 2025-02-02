@@ -645,3 +645,9 @@ export interface EmployeeDetailType {
   external_work_history: any[];
   internal_work_history: any[];
 }
+
+export type ToggleLikeDocType = {
+  doctype: string;
+  name: string;
+  add: "Yes" | "No";
+};

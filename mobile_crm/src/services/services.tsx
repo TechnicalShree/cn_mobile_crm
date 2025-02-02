@@ -1,7 +1,7 @@
 import { format } from "date-fns";
 import API_END_POINTS from "./apiEndpoints";
 import requestWrapper from "./callRequest";
-import { PostLeadType, PostNoteType } from "../types/types";
+import { PostLeadType, PostNoteType, ToggleLikeDocType } from "../types/types";
 import { de } from "date-fns/locale";
 
 export const getLeadAndOpportunityStats =
@@ -236,6 +236,19 @@ export const postUpdateLead = <TData, TVariables extends PostLeadType>(): ((
     delete formData.name || "";
     return await requestWrapper<TData>({
       url: `${API_END_POINTS.leadApi}/${name}`,
+      method: "PUT",
+      data: JSON.stringify(formData),
+    });
+  };
+};
+
+export const postToggleLeadLike = <
+  TData,
+  TVariables extends ToggleLikeDocType
+>(): ((formData: TVariables) => Promise<TData>) => {
+  return async (formData) => {
+    return await requestWrapper<TData>({
+      url: `${API_END_POINTS.toggleLike}`,
       method: "PUT",
       data: JSON.stringify(formData),
     });

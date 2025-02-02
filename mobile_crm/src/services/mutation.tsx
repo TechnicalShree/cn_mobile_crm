@@ -5,6 +5,7 @@ import {
   postMeetingDetails,
   postNoteDetails,
   postTaskDetails,
+  postToggleLeadLike,
   postUpdateLead,
   postUpdateNote,
   putMeetingDetails,
@@ -17,6 +18,7 @@ import {
   PostNoteType,
   PostToDoType,
   PostVisitDetailsType,
+  ToggleLikeDocType,
 } from "../types/types";
 
 export const useSubmitNoteDetails = <TError = AxiosError, TContext = unknown>({
@@ -122,6 +124,18 @@ export const useUpdateLead = <TError = AxiosError, TContext = unknown>({
   return useMutation<unknown, TError, LeadType, TContext>(
     ["postUpdateLead"],
     postUpdateLead<unknown, LeadType>(),
+    options
+  );
+};
+
+export const useToggleLikeLead = <TError = AxiosError, TContext = unknown>({
+  options,
+}: {
+  options?: UseMutationOptions<unknown, TError, ToggleLikeDocType, TContext>;
+}) => {
+  return useMutation<unknown, TError, ToggleLikeDocType, TContext>(
+    ["toggleLeadLike"],
+    postToggleLeadLike<unknown, ToggleLikeDocType>(),
     options
   );
 };

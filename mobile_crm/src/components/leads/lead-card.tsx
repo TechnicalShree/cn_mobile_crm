@@ -9,12 +9,29 @@ import { useState } from "react";
 import NoteForm from "../modals/create-note";
 import CreateTask from "../modals/create-task";
 import ScheduleMeetingModal from "../modals/schedule-meeting";
+import { useToggleLikeLead } from "../../services/mutation";
 
 export default function LeadCard({ lead }: { lead: LeadType }) {
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
   const [isVisitModalOpen, setIsVisitModalOpen] = useState(false);
   const [isMeetingModalOpen, setIsMeetingModalOpen] = useState(false);
-  console.log("-----sdf---sdf-w--e-", isNoteModalOpen);
+
+  const { mutate: toggleLike } = useToggleLikeLead({
+    options: {
+      onSuccess: () => {},
+      onError: () => {},
+    },
+  });
+
+  const handleToggleLike = () => {
+    toggleLike({
+      doctype: "Lead",
+      name: lead.name,
+      add: "Yes",
+    });
+  };
+
+  console.log("sdkjbsdjk s-d--f ------", lead);
 
   return (
     <Link href={`/mobile_crm/leads/${lead.name}`}>
