@@ -52,7 +52,7 @@ export default function ScheduleMeetingModal({
 
         toast({
           title: "Task Added",
-          description: "Your task has been successfully created.",
+          description: "Your meeting has been successfully created.",
         });
       },
     },
