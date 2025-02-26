@@ -1,0 +1,237 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2023-12-20 16:54:42.696773",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "custom_purpose",
+  "custom_location_area",
+  "type",
+  "full_name",
+  "mobile_number",
+  "date",
+  "property_name",
+  "locality",
+  "lead",
+  "project_name",
+  "column_break_lvsl",
+  "time_format",
+  "time_hrs",
+  "time_mins",
+  "is_visit_started",
+  "is_location",
+  "is_visit_done",
+  "status",
+  "assigned_to",
+  "assigned_to_employee_name",
+  "comment",
+  "visit_details_section",
+  "location",
+  "custom_start_location",
+  "start_time",
+  "end_time"
+ ],
+ "fields": [
+  {
+   "fieldname": "type",
+   "fieldtype": "Select",
+   "label": "Type",
+   "options": "Visit Scheduled\nRe-Visit Scheduled",
+   "read_only_depends_on": "eval:doc.property_name && doc.type "
+  },
+  {
+   "fieldname": "full_name",
+   "fieldtype": "Data",
+   "label": "Full Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "mobile_number",
+   "fieldtype": "Data",
+   "label": "Mobile Number",
+   "read_only": 1
+  },
+  {
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Date",
+   "read_only_depends_on": "eval:doc.property_name && doc.date"
+  },
+  {
+   "fieldname": "property_name",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Property Name",
+   "options": "Property",
+   "set_only_once": 1
+  },
+  {
+   "fetch_from": "property_name.locality",
+   "fieldname": "locality",
+   "fieldtype": "Link",
+   "label": "Locality",
+   "options": "Location",
+   "read_only": 1
+  },
+  {
+   "fieldname": "lead",
+   "fieldtype": "Link",
+   "label": "Lead",
+   "options": "Lead"
+  },
+  {
+   "fieldname": "project_name",
+   "fieldtype": "Link",
+   "label": "Project Name",
+   "options": "Project"
+  },
+  {
+   "fieldname": "column_break_lvsl",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "time_format",
+   "fieldtype": "Select",
+   "label": "Time Format",
+   "options": "AM\nPM",
+   "read_only_depends_on": "eval:doc.property_name && doc.time_format"
+  },
+  {
+   "fieldname": "time_hrs",
+   "fieldtype": "Data",
+   "label": "Time (Hrs)",
+   "read_only_depends_on": "eval:doc.__islocal ? false: true"
+  },
+  {
+   "fieldname": "time_mins",
+   "fieldtype": "Data",
+   "label": "Time (Mins)",
+   "read_only_depends_on": "eval:doc.__islocal ? false: true"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_visit_started",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Is Visit Started"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_location",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Is Location"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_visit_done",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Is Visit Done"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "\nVisit Scheduled\nRe-Visit Scheduled\nVisit Cancelled\nVisit Done\nRe-Visit Done",
+   "read_only": 1
+  },
+  {
+   "fieldname": "assigned_to",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "in_standard_filter": 1,
+   "label": "Assigned To",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "assigned_to_employee_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Assigned To Employee Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "comment",
+   "fieldtype": "Small Text",
+   "label": "Comment",
+   "read_only": 1
+  },
+  {
+   "fieldname": "visit_details_section",
+   "fieldtype": "Section Break",
+   "label": "Visit Details"
+  },
+  {
+   "depends_on": "eval:doc.is_location == 1",
+   "fieldname": "location",
+   "fieldtype": "Geolocation",
+   "label": "Location",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.is_visit_started !== 0",
+   "fieldname": "start_time",
+   "fieldtype": "Time",
+   "label": "Start Time",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.is_visit_done !== 0",
+   "fieldname": "end_time",
+   "fieldtype": "Time",
+   "label": "End Time",
+   "read_only": 1
+  },
+  {
+   "fieldname": "custom_purpose",
+   "fieldtype": "Data",
+   "label": "Purpose"
+  },
+  {
+   "fieldname": "custom_location_area",
+   "fieldtype": "Data",
+   "label": "Location Area"
+  },
+  {
+   "fieldname": "custom_start_location",
+   "fieldtype": "Geolocation",
+   "label": "Start Location"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-02-26 14:31:29.311406",
+ "modified_by": "Administrator",
+ "module": "CN Mobile CRM",
+ "name": "Daily Visit Schedule",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "show_title_field_in_link": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "property_name"
+}
