@@ -1,0 +1,43 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:{budget_range}",
+ "creation": "2024-06-20 13:01:12.116675",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "budget_range"
+ ],
+ "fields": [
+  {
+   "fieldname": "budget_range",
+   "fieldtype": "Data",
+   "label": "Budget Range"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-02-26 14:58:55.855020",
+ "modified_by": "Administrator",
+ "module": "CN Mobile CRM",
+ "name": "Budget Range",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
